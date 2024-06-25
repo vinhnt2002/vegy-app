@@ -230,7 +230,7 @@ const ListingDetails = () => {
           <Text style={styles.footerBtnTxt}>Đặt Ngay</Text>
         </TouchableOpacity>
         <TouchableOpacity onPress={() => {}} style={styles.footerBtn}>
-          <Text style={styles.footerBtnTxt}>${listing.price}</Text>
+          <Text style={styles.footerBtnTxt}>120.000 VND / mẫu</Text>
         </TouchableOpacity>
       </Animated.View>
 
@@ -256,7 +256,7 @@ const ListingDetails = () => {
               style={[styles.modalButton, styles.modalCloseButton]}
               onPress={() => setModalVisible(false)}
             >
-              <Text style={styles.modalButtonText}>Close</Text>
+              <Text style={styles.modalButtonText}>Hủy</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -340,6 +340,7 @@ const styles = StyleSheet.create({
     padding: 20,
     borderRadius: 10,
     alignItems: "center",
+    justifyContent: "center"
   },
   footerBookBtn: {
     flex: 2,

@@ -100,7 +100,6 @@ export default function LoginScreen() {
 
   const handleSignIn = async () => {
     try {
-     
       // await login({ email: userInfo.email, password: userInfo.password });
 
       router.push("/(tabs)");
@@ -124,10 +123,10 @@ export default function LoginScreen() {
           source={require("../../../assets/images/sign-in/sign_in.png")}
         />
         <Text style={[styles.welcomeText, { fontFamily: "Raleway_700Bold" }]}>
-          Welcome Back!
+          Chào mừng quay trở lại!
         </Text>
         <Text style={styles.learningText}>
-          Login to your existing account of Vegy
+          Đăng nhập vào tài khoản hiện có của bạn tại Vegy
         </Text>
         <View style={styles.inputContainer}>
           <View>
@@ -147,9 +146,7 @@ export default function LoginScreen() {
               color={"#A1A1A1"}
             />
             {required && (
-              <View 
-              style={commonStyles.errorContainer}
-              >
+              <View style={commonStyles.errorContainer}>
                 <Entypo name="cross" size={18} color={"red"} />
               </View>
             )}
@@ -188,10 +185,13 @@ export default function LoginScreen() {
               />
             </View>
             {error.password && (
-              <View style={
-                [
+              <View
+                style={[
+                  ,
                   // commonStyles.errorContainer
-                , { top: 145 }]}>
+                  { top: 145 },
+                ]}
+              >
                 <Entypo name="cross" size={18} color={"red"} />
                 <Text style={{ color: "red", fontSize: 11, marginTop: -1 }}>
                   {error.password}
@@ -232,8 +232,8 @@ export default function LoginScreen() {
                     fontFamily: "Raleway_700Bold",
                   }}
                 >
-                 {/* {isLoading ? 'Waiting to login' : 'Sign In'}  */}
-                 Sign In
+                  {/* {isLoading ? 'Waiting to login' : 'Sign In'}  */}
+                  Đăng nhập
                 </Text>
               )}
             </TouchableOpacity>
@@ -257,11 +257,9 @@ export default function LoginScreen() {
 
             <View style={styles.signupRedirect}>
               <Text style={{ fontSize: 18, fontFamily: "Raleway_600SemiBold" }}>
-                Don't have an account?
+                Bạn chưa có tài khoản ?
               </Text>
-              <TouchableOpacity
-                onPress={() => router.push("/(auth)/sign-in")}
-              >
+              <TouchableOpacity onPress={() => router.push("/(auth)/sign-in")}>
                 <Text
                   style={{
                     fontSize: 18,
@@ -270,7 +268,7 @@ export default function LoginScreen() {
                     marginLeft: 5,
                   }}
                 >
-                  Sign Up
+                  Đăng kí
                 </Text>
               </TouchableOpacity>
             </View>
