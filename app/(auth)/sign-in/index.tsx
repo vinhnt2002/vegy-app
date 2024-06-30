@@ -37,7 +37,8 @@ import { commonStyles } from "@/styles/common/common.styles";
 import Colors from "@/constants/Colors";
 // import { useLoginMutation } from "@/redux/features/auth/authApi";
 // import AsyncStorage from "@react-native-async-storage/async-storage";
-
+import { getCurrentUser, signIn } from "../../../lib/appwrite";
+import { useGlobalContext } from "../../../context/global-provider";
 export default function LoginScreen() {
   const [isPasswordVisible, setPasswordVisible] = useState(false);
   const [buttonSpinner, setButtonSpinner] = useState(false);
@@ -49,7 +50,7 @@ export default function LoginScreen() {
   const [error, setError] = useState({
     password: "",
   });
-
+  const { setUser, setIsLogged } = useGlobalContext();
   // const [login, { isSuccess, isError, isLoading }] = useLoginMutation();
 
   let [fontsLoaded, fontError] = useFonts({
@@ -100,7 +101,12 @@ export default function LoginScreen() {
 
   const handleSignIn = async () => {
     try {
-      // await login({ email: userInfo.email, password: userInfo.password });
+      await signIn(userInfo.email, userInfo.password);
+
+      const result = await getCurrentUser();
+
+      setUser(result);
+      setIsLogged(true);
 
       router.push("/(tabs)");
       console.log("oke");
