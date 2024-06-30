@@ -34,7 +34,7 @@ const slots = Array.from({ length: 20 }, (_, i) => `Slot ${i + 1}`); // Sample s
 
 const ListingDetails = () => {
   const { id } = useLocalSearchParams();
-  const listing: ListingType = (listingData as ListingType[]).find(
+  const listing: ListingType | undefined = (listingData as ListingType[]).find(
     (item) => item.id === id
   );
 
@@ -66,13 +66,29 @@ const ListingDetails = () => {
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedSlot, setSelectedSlot] = useState<string | null>(null);
 
+  // const handleBookNow = () => {
+  //   if (selectedSlot) {
+  //     // Proceed with booking logic
+  //     setModalVisible(false);
+  //     console.log(`Booking slot: ${selectedSlot}`);
+  //   } else {
+  //     // Show a message to select a slot
+  //     console.log("Please select a slot");
+  //   }
+  // };
+
   const handleBookNow = () => {
     if (selectedSlot) {
-      // Proceed with booking logic
       setModalVisible(false);
-      console.log(`Booking slot: ${selectedSlot}`);
+      router.push({
+        pathname: "/(payment)/PaymentScreen",
+        params: {
+          farmName: listing?.name,
+          slot: selectedSlot,
+          price: listing?.price,
+        },
+      });
     } else {
-      // Show a message to select a slot
       console.log("Please select a slot");
     }
   };
@@ -167,18 +183,18 @@ const ListingDetails = () => {
           contentContainerStyle={{ paddingBottom: 150 }}
         >
           <Animated.Image
-            source={{ uri: listing.image }}
+            source={{ uri: listing?.image }}
             style={[styles.image, imageAnimatedStyle]}
           />
           <View style={styles.contentWrapper}>
-            <Text style={styles.listingName}>{listing.name}</Text>
+            <Text style={styles.listingName}>{listing?.name}</Text>
             <View style={styles.listingLocationWrapper}>
               <FontAwesome5
                 name="map-marker-alt"
                 size={18}
                 color={Colors.primaryColor}
               />
-              <Text style={styles.listingLocationTxt}>{listing.location}</Text>
+              <Text style={styles.listingLocationTxt}>{listing?.location}</Text>
             </View>
 
             <View style={styles.highlightWrapper}>
@@ -189,7 +205,7 @@ const ListingDetails = () => {
                 <View>
                   <Text style={styles.highlightTxt}>Thời gian đăng</Text>
                   <Text style={styles.highlightTxtVal}>
-                    {listing.duration} Days
+                    {listing?.duration} Days
                   </Text>
                 </View>
               </View>
@@ -203,7 +219,9 @@ const ListingDetails = () => {
                 </View>
                 <View>
                   <Text style={styles.highlightTxt}>Số lượng mẫu đất</Text>
-                  <Text style={styles.highlightTxtVal}>{listing.duration}</Text>
+                  <Text style={styles.highlightTxtVal}>
+                    {listing?.duration}
+                  </Text>
                 </View>
               </View>
               <View style={{ flexDirection: "row" }}>
@@ -212,12 +230,12 @@ const ListingDetails = () => {
                 </View>
                 <View>
                   <Text style={styles.highlightTxt}>Đánh giá</Text>
-                  <Text style={styles.highlightTxtVal}>{listing.rating}</Text>
+                  <Text style={styles.highlightTxtVal}>{listing?.rating}</Text>
                 </View>
               </View>
             </View>
 
-            <Text style={styles.listingDetails}>{listing.description}</Text>
+            <Text style={styles.listingDetails}>{listing?.description}</Text>
           </View>
         </Animated.ScrollView>
       </View>
@@ -340,7 +358,7 @@ const styles = StyleSheet.create({
     padding: 20,
     borderRadius: 10,
     alignItems: "center",
-    justifyContent: "center"
+    justifyContent: "center",
   },
   footerBookBtn: {
     flex: 2,
@@ -386,11 +404,10 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     marginHorizontal: 5,
-    marginVertical : 4
+    marginVertical: 4,
   },
   selectedSlotItem: {
     backgroundColor: Colors.primaryColor,
-    
   },
   slotText: {
     color: Colors.black,
