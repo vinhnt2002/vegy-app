@@ -70,8 +70,8 @@ export async function createUser(
 // Sign In
 export async function signIn(email: string, password: string) {
   try {
-    const session = await account.createEmailPasswordSession(email, password);
-
+    const session = await account.createEmailSession(email, password);
+    
     return session;
   } catch (error: any) {
     throw new Error(error);

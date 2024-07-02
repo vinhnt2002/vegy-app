@@ -17,11 +17,15 @@ import Listings from "@/components/Listings";
 import listingData from "@/data/destinations.json";
 import GroupListings from "@/components/GroupListings";
 import groupData from "@/data/groups.json";
+import { useGlobalContext } from "@/context/global-provider";
 
 const Page = () => {
   const headerHeight = useHeaderHeight();
   const [category, setCategory] = useState("All");
 
+  const {user, isLogged, loading} = useGlobalContext();
+console.log("log: ",isLogged)
+  console.log(user)
   const onCatChanged = (category: string) => {
     console.log("Categpry: ", category);
     setCategory(category);

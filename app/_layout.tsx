@@ -51,6 +51,10 @@ function RootLayoutNav() {
           name="(auth)/sign-in/index"
           options={{ headerShown: false }}
         />
+        <Stack.Screen
+          name="(auth)/sign-up/index"
+          options={{ headerShown: false }}
+        />
       </Stack>
     </GlobalProvider>
   );

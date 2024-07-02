@@ -26,7 +26,7 @@ const GlobalProvider = ({ children }: { children: React.ReactNode }) => {
   const [isLogged, setIsLogged] = useState(false);
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
-
+console.log("first", user)
   useEffect(() => {
     getCurrentUser()
       .then((res: any) => {

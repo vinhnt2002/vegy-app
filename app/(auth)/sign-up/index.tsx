@@ -7,8 +7,10 @@ import {
   TextInput,
   TouchableOpacity,
   ActivityIndicator,
+  Alert,
 } from "react-native";
 import {
+  AntDesign,
   Entypo,
   FontAwesome,
   Fontisto,
@@ -28,21 +30,21 @@ import {
   Nunito_600SemiBold,
 } from "@expo-google-fonts/nunito";
 import { useState } from "react";
-// import { commonStyles } from "@/styles/common/common.styles";
-import { router } from "expo-router";
-// import axios from "axios";
-// import { SERVER_URI } from "@/utils/uri";
-import { Toast } from "react-native-toast-notifications";
 import { commonStyles } from "@/styles/common/common.styles";
-import Colors from "@/constants/Colors";
-// import { useLoginMutation } from "@/redux/features/auth/authApi";
-// import AsyncStorage from "@react-native-async-storage/async-storage";
-import { getCurrentUser, signIn } from "../../../lib/appwrite";
-import { useGlobalContext } from "../../../context/global-provider";
-export default function LoginScreen() {
+import { router } from "expo-router";
+
+import { Toast } from "react-native-toast-notifications";
+import { useGlobalContext } from "@/context/global-provider";
+import { createUser } from "@/lib/appwrite";
+
+export default function SignUpScreen() {
   const [isPasswordVisible, setPasswordVisible] = useState(false);
   const [buttonSpinner, setButtonSpinner] = useState(false);
+  const { setUser, setIsLogged } = useGlobalContext();
+
+  const [isSubmitting, setSubmitting] = useState(false);
   const [userInfo, setUserInfo] = useState({
+    username: "",
     email: "",
     password: "",
   });
@@ -50,8 +52,6 @@ export default function LoginScreen() {
   const [error, setError] = useState({
     password: "",
   });
-  const { setUser, setIsLogged } = useGlobalContext();
-  // const [login, { isSuccess, isError, isLoading }] = useLoginMutation();
 
   let [fontsLoaded, fontError] = useFonts({
     Raleway_600SemiBold,
@@ -66,24 +66,25 @@ export default function LoginScreen() {
     return null;
   }
 
-
-
   const handleSignIn = async () => {
+    setButtonSpinner(true);
+
+    setSubmitting(true);
+
     try {
-      await signIn(userInfo.email, userInfo.password);
-
-      const result = await getCurrentUser();
-
+      const result = await createUser(
+        userInfo.email,
+        userInfo.password,
+        userInfo.username
+      );
       setUser(result);
       setIsLogged(true);
 
-      router.push("/(tabs)");
-      console.log("oke");
-    } catch (error) {
-      console.log(error);
-      Toast.show("Email or password is not correct!", {
-        type: "danger",
-      });
+      router.replace("/(tabs)");
+    } catch (error: any) {
+      Alert.alert("Error", error.message);
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -95,21 +96,38 @@ export default function LoginScreen() {
       <ScrollView>
         <Image
           style={styles.signInImage}
-          source={require("../../../assets/images/sign-in/sign_in.png")}
+          source={require("@/assets/images/sign-in/signup.png")}
         />
         <Text style={[styles.welcomeText, { fontFamily: "Raleway_700Bold" }]}>
-          Chào mừng quay trở lại!
+          Bắt đầu nào!
         </Text>
         <Text style={styles.learningText}>
-          Đăng nhập vào tài khoản hiện có của bạn tại Vegy
+          CHãy tạo tài khoản mới để tham gia với Vegy
         </Text>
         <View style={styles.inputContainer}>
+          <View>
+            <TextInput
+              style={[styles.input, { paddingLeft: 40, marginBottom: -12 }]}
+              keyboardType="default"
+              value={userInfo.username}
+              placeholder="nhập tên của bạn"
+              onChangeText={(value) =>
+                setUserInfo({ ...userInfo, username: value })
+              }
+            />
+            <AntDesign
+              style={{ position: "absolute", left: 26, top: 14 }}
+              name="user"
+              size={20}
+              color={"#A1A1A1"}
+            />
+          </View>
           <View>
             <TextInput
               style={[styles.input, { paddingLeft: 40 }]}
               keyboardType="email-address"
               value={userInfo.email}
-              placeholder="support@vegy.com"
+              placeholder="ex:vegy@gmail.com"
               onChangeText={(value) =>
                 setUserInfo({ ...userInfo, email: value })
               }
@@ -131,12 +149,11 @@ export default function LoginScreen() {
                 keyboardType="default"
                 secureTextEntry={!isPasswordVisible}
                 defaultValue=""
-                value={userInfo.password}
                 placeholder="********"
-                // onChangeText={handlePasswordValidation}
                 onChangeText={(value) =>
                   setUserInfo({ ...userInfo, password: value })
                 }
+                // onChangeText={handlePasswordValidation}
               />
               <TouchableOpacity
                 style={styles.visibleIcon}
@@ -160,38 +177,20 @@ export default function LoginScreen() {
               />
             </View>
             {error.password && (
-              <View
-                style={[
-                  ,
-                  // commonStyles.errorContainer
-                  { top: 145 },
-                ]}
-              >
+              <View style={[commonStyles.errorContainer, { top: 145 }]}>
                 <Entypo name="cross" size={18} color={"red"} />
                 <Text style={{ color: "red", fontSize: 11, marginTop: -1 }}>
                   {error.password}
                 </Text>
               </View>
             )}
-            {/* <TouchableOpacity
-              onPress={() => router.push("/(routes)/forgot-password")}
-            >
-              <Text
-                style={[
-                  styles.forgotSection,
-                  { fontFamily: "Nunito_600SemiBold" },
-                ]}
-              >
-                Forgot Password?
-              </Text>
-            </TouchableOpacity> */}
 
             <TouchableOpacity
               style={{
                 padding: 16,
                 borderRadius: 8,
                 marginHorizontal: 16,
-                backgroundColor: Colors.primaryColor,
+                backgroundColor: "#2467EC",
                 marginTop: 15,
               }}
               onPress={handleSignIn}
@@ -207,8 +206,7 @@ export default function LoginScreen() {
                     fontFamily: "Raleway_700Bold",
                   }}
                 >
-                  {/* {isLoading ? 'Waiting to login' : 'Sign In'}  */}
-                  Đăng nhập
+                  Đăng kí
                 </Text>
               )}
             </TouchableOpacity>
@@ -232,9 +230,9 @@ export default function LoginScreen() {
 
             <View style={styles.signupRedirect}>
               <Text style={{ fontSize: 18, fontFamily: "Raleway_600SemiBold" }}>
-                Bạn chưa có tài khoản ?
+                Bạn đã có tài khoản?
               </Text>
-              <TouchableOpacity onPress={() => router.push("/(auth)/sign-up")}>
+              <TouchableOpacity onPress={() => router.push("/(auth)/sign-in")}>
                 <Text
                   style={{
                     fontSize: 18,
@@ -243,7 +241,7 @@ export default function LoginScreen() {
                     marginLeft: 5,
                   }}
                 >
-                  Đăng kí
+                  Đăng nhập
                 </Text>
               </TouchableOpacity>
             </View>
