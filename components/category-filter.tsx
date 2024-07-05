@@ -1,9 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, FlatList, TextInput, StyleSheet, Dimensions, ScrollView } from 'react-native';
-import { Picker } from '@react-native-picker/picker';
+import { View, Text, TextInput, StyleSheet, Dimensions, ScrollView, FlatList, TouchableOpacity, Image } from 'react-native';
 import productData from '@/data/product.json';
 import Colors from '@/constants/Colors';
-
+import CategoryButtons from './button-fillter';
+import { getAllFarm } from '@/lib/actions/farm';
+import useAppwrite from '@/lib/use-appwrite';
+import { ListingType } from '@/types/listingType';
+import { FontAwesome5, Ionicons } from '@expo/vector-icons';
+import { Link } from 'expo-router';
 
 const { width } = Dimensions.get('window');
 
@@ -19,6 +23,8 @@ const CategoryFilter = () => {
   const [filteredPackages, setFilteredPackages] = useState<Package[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedType, setSelectedType] = useState('all'); // Set default value to 'all'
+  const { data: farms, refetch } = useAppwrite(getAllFarm);
+  const [category, setCategory] = useState("All");
 
   useEffect(() => {
     setPackages(productData);
@@ -42,20 +48,49 @@ const CategoryFilter = () => {
     setFilteredPackages(tempPackages);
   };
 
+  const onCatChanged = (category: string) => {
+    console.log("Category: ", category);
+    setCategory(category);
+  };
+
+  // Render từng mục của danh sách
+  const renderItems = ({ item }: { item: ListingType }) => {
+    return (
+      <Link href={`/listing/${item.$id}`} asChild>
+        <TouchableOpacity>
+          <View style={[styles.item, { width: (width - 60) / 2 }]}>
+            <Image source={{ uri: item.image }} style={styles.image} />
+            <View style={styles.bookmark}>
+              <Ionicons
+                name="bookmark-outline"
+                size={20}
+                color={Colors.white}
+              />
+            </View>
+            <Text style={styles.itemTxt} numberOfLines={1} ellipsizeMode="tail">
+              {item.name}
+            </Text>
+            <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
+              <View style={{ flexDirection: "row", alignItems: "center" }}>
+                <FontAwesome5
+                  name="map-marker-alt"
+                  size={18}
+                  color={Colors.primaryColor}
+                />
+                <Text style={styles.itemLocationTxt}>{item.location}</Text>
+              </View>
+              <Text style={styles.itemPriceTxt}>${item.price}</Text>
+            </View>
+          </View>
+        </TouchableOpacity>
+      </Link>
+    );
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.pickerContainer}>
-        <Picker
-          selectedValue={selectedType}
-          style={styles.picker}
-          onValueChange={(itemValue) => setSelectedType(itemValue)}
-        >
-          <Picker.Item label="Select Type" value="" />
-          {[...new Set(packages.map(pkg => pkg.type))].map(type => (
-            <Picker.Item key={type} label={type} value={type} />
-          ))}
-          <Picker.Item label="Fill All Types" value="all" />
-        </Picker>
+        <CategoryButtons onCagtegoryChanged={onCatChanged} />
       </View>
 
       <TextInput
@@ -64,25 +99,16 @@ const CategoryFilter = () => {
         value={searchTerm}
         onChangeText={text => setSearchTerm(text)}
       />
-      <ScrollView showsVerticalScrollIndicator={false}>
-        <View style={styles.container}>
-          <FlatList
-            style={styles.flatList}
-            data={filteredPackages}
-            keyExtractor={item => item.id.toString()}
-            renderItem={({ item }) => (
-              <View style={styles.item}>
-                <Text style={styles.name}>{item.name}</Text>
-                <Text style={styles.type}>{item.type}</Text>
-                <Text style={styles.category}>{item.category}</Text>
-              </View>
-            )}
-          />
 
-        </View>
-
-      </ScrollView>
-
+      <FlatList
+        data={farms}
+        renderItem={renderItems}
+        keyExtractor={(item) => item.$id}
+        numColumns={2}
+        columnWrapperStyle={{ justifyContent: 'space-between' }}
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={styles.flatList}
+      />
     </View>
   );
 };
@@ -104,40 +130,51 @@ const styles = StyleSheet.create({
   },
   pickerContainer: {
     position: 'absolute',
+    marginTop: 20,
     top: 20,
     right: 20,
     zIndex: 1,
-  },
-  picker: {
-    height: 50,
-    width: 180,
-    marginTop: 20,
-    padding: 8,
-    backgroundColor: Colors.white, // Ensure background color to avoid transparency issues
   },
   flatList: {
     marginTop: 80, // Adjust marginTop to accommodate Picker's height
   },
   item: {
-    width: width - 40,
-    padding: 16,
-    borderBottomColor: '#ccc',
-    borderBottomWidth: 1,
     backgroundColor: Colors.white,
-    borderRadius: 8,
-    marginBottom: 8,
+    padding: 10,
+    borderRadius: 10,
+    marginBottom: 20,
+    marginRight: 10,
   },
-  name: {
-    fontSize: 18,
-    fontWeight: 'bold',
+  image: {
+    width: '100%',
+    height: 150,
+    borderRadius: 10,
+    marginBottom: 15,
   },
-  type: {
+  bookmark: {
+    position: "absolute",
+    top: 135,
+    right: 20,
+    backgroundColor: Colors.primaryColor,
+    padding: 10,
+    borderRadius: 30,
+    borderWidth: 2,
+    borderColor: Colors.white,
+  },
+  itemTxt: {
     fontSize: 16,
-    color: '#666',
+    fontWeight: "600",
+    color: Colors.black,
+    marginBottom: 10,
   },
-  category: {
-    fontSize: 14,
-    color: '#999',
+  itemLocationTxt: {
+    fontSize: 12,
+    marginLeft: 5,
+  },
+  itemPriceTxt: {
+    fontSize: 12,
+    fontWeight: "600",
+    color: Colors.primaryColor,
   },
 });
 
