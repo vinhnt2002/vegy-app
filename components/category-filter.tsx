@@ -7,7 +7,7 @@ import { getAllFarm } from '@/lib/actions/farm';
 import useAppwrite from '@/lib/use-appwrite';
 import { ListingType } from '@/types/listingType';
 import { FontAwesome5, Ionicons } from '@expo/vector-icons';
-import { Link } from 'expo-router';
+import { Link, Stack } from 'expo-router';
 
 const { width } = Dimensions.get('window');
 
@@ -55,7 +55,13 @@ const CategoryFilter = () => {
 
   // Render từng mục của danh sách
   const renderItems = ({ item }: { item: ListingType }) => {
-    return (
+    return (<>
+      <Stack.Screen
+        options={{
+          title: "",
+
+        }}
+      />
       <Link href={`/listing/${item.$id}`} asChild>
         <TouchableOpacity>
           <View style={[styles.item, { width: (width - 60) / 2 }]}>
@@ -84,6 +90,10 @@ const CategoryFilter = () => {
           </View>
         </TouchableOpacity>
       </Link>
+
+    </>
+
+
     );
   };
 
