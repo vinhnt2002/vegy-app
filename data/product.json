@@ -1,0 +1,53 @@
+[
+    {
+      "id": 1,
+      "name": "Package A",
+      "type": "Type 1",
+      "category": "Category 1"
+    },
+    {
+      "id": 2,
+      "name": "Package B",
+      "type": "Type 2",
+      "category": "Category 1"
+    },
+    {
+      "id": 3,
+      "name": "Package C",
+      "type": "Type 1",
+      "category": "Category 2"
+    },
+    {
+      "id": 4,
+      "name": "Package D",
+      "type": "Type 3",
+      "category": "Category 2"
+    }
+    ,
+    {
+      "id": 5,
+      "name": "Package E",
+      "type": "Type 1",
+      "category": "Category 1"
+    },
+    {
+      "id": 6,
+      "name": "Package F",
+      "type": "Type 3",
+      "category": "Category 1"
+    }
+    ,
+    {
+      "id": 7,
+      "name": "Package G",
+      "type": "Type 1",
+      "category": "Category 1"
+    },
+    {
+      "id": 8,
+      "name": "Package H",
+      "type": "Type 3",
+      "category": "Category 2"
+    }
+  ]
+  

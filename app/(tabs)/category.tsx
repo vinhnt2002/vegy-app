@@ -1,11 +1,16 @@
 import { StyleSheet, Text, View } from 'react-native'
 import React from 'react'
+import CategoryFilter from '@/components/category-filter'
+
+
 
 const Page = () => {
   return (
     <View style={styles.container}>
-      <Text>Category</Text>
-    </View>
+  
+    <CategoryFilter />
+  </View>
+
   )
 }
 
@@ -16,5 +21,5 @@ const styles = StyleSheet.create({
     flex:1,
     justifyContent:'center',
     alignItems:'center',
-  }
+  }, 
 })

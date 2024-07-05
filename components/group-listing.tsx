@@ -21,7 +21,7 @@ const GroupListings = ({ listings }: { listings: GroupType[] }) => {
           <View style={{flexDirection:'row',alignItems:'center'}}>
             <Ionicons name="star" size={20} color={Colors.primaryColor} />
             <Text style={styles.itemRating}>{item.rating}</Text>
-            <Text style={styles.itemReviews}>({item.reviews})</Text>
+            {/* <Text style={styles.itemReviews}>({item.reviews})</Text> */}
           </View>
         </View>
       </View>

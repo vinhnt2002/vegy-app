@@ -1,20 +1,31 @@
-import { StyleSheet, Text, View } from 'react-native'
-import React from 'react'
+import React from "react";
+import { View, StyleSheet, TouchableOpacity, Image, Text } from "react-native";
 
-const Page = () => {
+import Colors from "@/constants/Colors";
+import ProfileComponent from "@/components/profile-component";
+import { Stack, router } from "expo-router";
+import { Ionicons } from "@expo/vector-icons";
+
+const ProfilePage = () => {
+  const isLogged = true
   return (
-    <View style={styles.container}>
-      <Text>Profile</Text>
-    </View>
-  )
-}
+    <>
+      <Stack.Screen
+      options={{headerShown : false}}
+      />
+      <View style={styles.container}>
+        <ProfileComponent />
+      </View>
+    </>
+  );
+};
 
-export default Page
+export default ProfilePage;
 
 const styles = StyleSheet.create({
   container: {
-    flex:1,
-    justifyContent:'center',
-    alignItems:'center',
-  }
-})
+    flex: 1,
+    marginTop:12,
+    backgroundColor: Colors.bgColor,
+  },
+});

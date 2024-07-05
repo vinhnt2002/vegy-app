@@ -1,4 +1,6 @@
 export default {
+  grey:"#808080",
+  red: "#D2122E",
   primaryColor: "#51995c",
   secondaryColor: "#ffcc00",
   accentColor: "#ff5722",

@@ -11,7 +11,6 @@ import {
 import React, { useState } from "react";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { ListingType } from "@/types/listingType";
-import listingData from "@/data/destinations.json";
 import {
   Feather,
   FontAwesome,
@@ -26,18 +25,25 @@ import Animated, {
   useAnimatedStyle,
   useScrollViewOffset,
 } from "react-native-reanimated";
+import useAppwrite from "@/lib/use-appwrite";
+import { getAllFarm } from "@/lib/actions/farm";
+import { useSlotsByFarmId } from "@/hooks/use-slot";
+import { formatCurrency } from "@/utils/formated";
 
 const { width } = Dimensions.get("window");
 const IMG_HEIGHT = 300;
 
-const slots = Array.from({ length: 20 }, (_, i) => `Slot ${i + 1}`); // Sample slots
+// const slots = Array.from({ length: 20 }, (_, i) => `Slot ${i + 1}`); // Sample slots
 
 const ListingDetails = () => {
-  const { id } = useLocalSearchParams();
-  const listing: ListingType | undefined = (listingData as ListingType[]).find(
-    (item) => item.id === id
-  );
+  const { $id } = useLocalSearchParams();
+  const { data: farms, refetch } = useAppwrite(getAllFarm);
 
+  const { slots, loading, error } = useSlotsByFarmId($id as string);
+
+  const listing: ListingType | undefined = (farms as ListingType[]).find(
+    (item) => item.$id === $id
+  );
   const router = useRouter();
 
   const scrollRef = useAnimatedRef<Animated.ScrollView>();
@@ -64,18 +70,7 @@ const ListingDetails = () => {
   });
 
   const [modalVisible, setModalVisible] = useState(false);
-  const [selectedSlot, setSelectedSlot] = useState<string | null>(null);
-
-  // const handleBookNow = () => {
-  //   if (selectedSlot) {
-  //     // Proceed with booking logic
-  //     setModalVisible(false);
-  //     console.log(`Booking slot: ${selectedSlot}`);
-  //   } else {
-  //     // Show a message to select a slot
-  //     console.log("Please select a slot");
-  //   }
-  // };
+  const [selectedSlot, setSelectedSlot] = useState<any | null>(null);
 
   const handleBookNow = () => {
     if (selectedSlot) {
@@ -83,9 +78,9 @@ const ListingDetails = () => {
       router.push({
         pathname: "/(payment)/PaymentScreen",
         params: {
-          farmName: listing?.name,
-          slot: selectedSlot,
-          price: listing?.price,
+          farmName: listing?.name ?? "",
+          slot: selectedSlot.slotNumber || selectedSlot.$id,
+          price: listing?.price ?? 0,
         },
       });
     } else {
@@ -98,22 +93,36 @@ const ListingDetails = () => {
     for (let i = 0; i < slots.length; i += 4) {
       rows.push(
         <View key={i} style={styles.slotRow}>
-          {slots.slice(i, i + 4).map((slot) => (
+          {slots.slice(i, i + 4).map((slot, index) => (
             <TouchableOpacity
-              key={slot}
+              key={slot.$id || index}
               style={[
                 styles.slotItem,
-                slot === selectedSlot && styles.selectedSlotItem,
+                slot.$id === selectedSlot?.$id && styles.selectedSlotItem,
+                !slot.availability && styles.unavailableSlot,
               ]}
-              onPress={() => setSelectedSlot(slot)}
+              onPress={() => {
+                if (slot.availability === true) {
+                  setSelectedSlot(slot);
+                }
+              }}
+              disabled={!slot.availability}
             >
               <Text
                 style={{
-                  color: slot === selectedSlot ? Colors.white : Colors.black,
+                  color: !slot.availability
+                    ? Colors.grey
+                    : slot.$id === selectedSlot?.$id
+                    ? Colors.white
+                    : Colors.black,
                 }}
               >
                 <Image
-                  source={require("../../assets/images/farm/field-have.png")}
+                  source={
+                    slot.availability
+                      ? require("../../assets/images/farm/field-have.png")
+                      : require("../../assets/images/farm/field.png")
+                  }
                   style={{
                     marginTop: 5,
                     width: 30,
@@ -204,9 +213,7 @@ const ListingDetails = () => {
                 </View>
                 <View>
                   <Text style={styles.highlightTxt}>Thời gian đăng</Text>
-                  <Text style={styles.highlightTxtVal}>
-                    {listing?.duration} Days
-                  </Text>
+                  <Text style={styles.highlightTxtVal}>2 ngày trước</Text>
                 </View>
               </View>
               <View style={{ flexDirection: "row" }}>
@@ -219,9 +226,7 @@ const ListingDetails = () => {
                 </View>
                 <View>
                   <Text style={styles.highlightTxt}>Số lượng mẫu đất</Text>
-                  <Text style={styles.highlightTxtVal}>
-                    {listing?.duration}
-                  </Text>
+                  <Text style={styles.highlightTxtVal}>{slots?.length}</Text>
                 </View>
               </View>
               <View style={{ flexDirection: "row" }}>
@@ -248,7 +253,9 @@ const ListingDetails = () => {
           <Text style={styles.footerBtnTxt}>Đặt Ngay</Text>
         </TouchableOpacity>
         <TouchableOpacity onPress={() => {}} style={styles.footerBtn}>
-          <Text style={styles.footerBtnTxt}>120.000 VND / mẫu</Text>
+          <Text style={styles.footerBtnTxt}>
+            {formatCurrency(listing?.price ?? 0)} VND / mẫu
+          </Text>
         </TouchableOpacity>
       </Animated.View>
 
@@ -408,6 +415,10 @@ const styles = StyleSheet.create({
   },
   selectedSlotItem: {
     backgroundColor: Colors.primaryColor,
+  },
+  unavailableSlot: {
+    opacity: 0.5,
+    backgroundColor: Colors.lightGrey,
   },
   slotText: {
     color: Colors.black,

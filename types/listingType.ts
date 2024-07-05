@@ -1,10 +1,10 @@
 export interface ListingType {
-  id: string;
+  $id: string;
   name: string;
   image: string;
   description: string;
   rating: number;
-  price: string;
+  price: number;
   duration: string;
   location: string;
   category: string;

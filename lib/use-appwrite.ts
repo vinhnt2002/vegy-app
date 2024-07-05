@@ -26,4 +26,5 @@ const useAppwrite = (fn: any) => {
   return { data, loading, refetch };
 };
 
+
 export default useAppwrite;

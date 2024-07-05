@@ -22,17 +22,17 @@ const Listings = ({ listings, category }: Props) => {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    console.log('Update Listing');
+    console.log("Update Listing");
     setLoading(true);
 
     setTimeout(() => {
-      setLoading(false)
+      setLoading(false);
     }, 200);
   }, [category]);
 
   const renderItems: ListRenderItem<ListingType> = ({ item }) => {
     return (
-      <Link href={`/listing/${item.id}`} asChild>
+      <Link href={`/listing/${item.$id}`} asChild>
         <TouchableOpacity>
           <View style={styles.item}>
             <Image source={{ uri: item.image }} style={styles.image} />
