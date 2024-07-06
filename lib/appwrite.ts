@@ -24,6 +24,7 @@ export const appwriteConfig = {
   // videoCollectionId: "660d157fcb8675efe308",
 };
 
+
 const client = new Client();
 
 client

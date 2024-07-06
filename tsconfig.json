@@ -15,5 +15,5 @@
     "expo-env.d.ts",
     "assets/videos/*.mp4",
     "global.d.ts"
-, "context/global-provider.tsx", "lib/appwrite.ts"  ]
+, "context/global-provider.tsx", "lib/appwrite.ts", "components/payment/vietqr-scanner.jsx", "components/payment/vietqr-generator.jsx"  ]
 }

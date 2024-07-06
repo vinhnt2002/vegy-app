@@ -31,7 +31,9 @@
     "react-dom": "18.2.0",
     "react-native": "0.73.6",
     "react-native-appwrite": "^0.2.2",
+    "react-native-camera": "^4.2.1",
     "react-native-paper": "^5.12.3",
+    "react-native-qrcode-svg": "^6.3.1",
     "react-native-reanimated": "~3.6.2",
     "react-native-responsive-dimensions": "^3.1.1",
     "react-native-responsive-screen": "^1.4.2",
@@ -39,7 +41,8 @@
     "react-native-screens": "~3.29.0",
     "react-native-toast-notifications": "^3.4.0",
     "react-native-url-polyfill": "^2.0.0",
-    "react-native-web": "~0.19.6"
+    "react-native-web": "~0.19.6",
+    "vietqr": "^1.1.9"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
