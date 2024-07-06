@@ -12,6 +12,16 @@ const destinationCategories = [
     iconName: "terrain",
   },
   {
+    title: "Hồ Chí Minh",
+    iconName: "city",
+  }
+  ,
+  {
+    title: "Cần thơ",
+    iconName: "city",
+  
+  },
+  {
     title: "Cities",
     iconName: "city",
   },

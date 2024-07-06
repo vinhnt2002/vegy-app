@@ -2,16 +2,28 @@ import React from 'react';
 import { StyleSheet, Text, View, Image, TouchableOpacity, ScrollView, ImageBackground } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import Colors from '@/constants/Colors';
+import useAppwrite from '@/lib/use-appwrite';
+import { getAllFarm } from '@/lib/actions/farm';
+import ItemProfile from './items-profiles';
 
 const ProfileComponent = () => {
-  return (
-    <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.container}>
+  const { data: farms, refetch } = useAppwrite(getAllFarm);
+
+  const farmCount = farms.length; // Update this according to your data structure
+  const seedsCount = 50; // Replace this with actual seeds count
+  const walletCount = 4; // Replace this with actual seeds count
+  const otherCount = 30; // Replace this with actual other items count
+  const transportCount = 8; // Replace this with actual seeds count
+  const orderCount = 12; // Replace this with actual other items count
+
+  return (<>
+      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.container}>
       <ImageBackground 
         source={require('@/assets/images/farm/farm-bg.png')}
         style={styles.header}
       >
         <Image
-          source={require('@/assets/images/avatarUser/user1.png')}
+          source={require('@/assets/images/avatarUser/user3.png')}
           style={styles.avatar}
         />
         <TouchableOpacity style={styles.editButton}>
@@ -42,7 +54,12 @@ const ProfileComponent = () => {
           <Text style={styles.value}>123 Đường ABC, Phường XYZ, TP. Hồ Chí Minh</Text>
         </View>
       </View>
+      <View>
+      <ItemProfile farmCount={farmCount} seedsCount={seedsCount} walletCount={walletCount} otherCount={otherCount} orderCount={orderCount} transportCount={transportCount} />
+      </View>
     </ScrollView>
+  </>
+
   );
 };
 
