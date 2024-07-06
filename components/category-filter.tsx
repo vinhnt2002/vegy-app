@@ -88,8 +88,10 @@ const CategoryFilter = () => {
               <Text style={styles.itemPriceTxt}>${item.price}</Text>
             </View>
           </View>
+          
         </TouchableOpacity>
       </Link>
+
 
     </>
 
