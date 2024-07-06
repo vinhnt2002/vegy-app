@@ -47,27 +47,34 @@ const PaymentScreen = () => {
   return (
     <>
       <Stack.Screen
+
         options={{
           title: "Thanh toán",
+          
         }}
       />
       <View style={styles.orderInfoContainer}>
         <Text style={styles.title}>Thông tin đơn hàng</Text>
         <View style={styles.orderDetails}>
-          <Text style={styles.orderDetail}>
-            Tên nông trại: <Text style={styles.orderValue}>{farmName}</Text>
-          </Text>
-          <Text style={styles.orderDetail}>
-            Slot đặt: <Text style={styles.orderValue}>{slot}</Text>
-          </Text>
-          <Text style={styles.orderDetail}>
-            Giá: <Text style={styles.orderValue}>{price} VND</Text>
-          </Text>
-          <Text style={styles.orderDetail}>
-            Tổng tiền: <Text style={styles.orderValue}>{price} VND</Text>
-          </Text>
+          <View style={styles.orderDetail}>
+            <Text style={styles.orderLabel}>Tên nông trại:</Text>
+            <Text style={styles.orderValue}>{farmName}</Text>
+          </View>
+          <View style={styles.orderDetail}>
+            <Text style={styles.orderLabel}>Slot đặt:</Text>
+            <Text style={styles.orderValue}>{slot}</Text>
+          </View>
+          <View style={styles.orderDetail}>
+            <Text style={styles.orderLabel}>Giá:</Text>
+            <Text style={styles.orderValue}>{price} VND</Text>
+          </View>
+          <View style={styles.orderDetail}>
+            <Text style={styles.orderLabel}>Tổng tiền:</Text>
+            <Text style={styles.orderValue}>{price} VND</Text>
+          </View>
         </View>
       </View>
+
       <View style={styles.container}>
         <Text style={styles.title}>Chọn phương thức thanh toán</Text>
         {paymentMethods.map((method) => (
@@ -113,6 +120,7 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: "bold",
     marginBottom: 20,
+    textAlign: "center",
   },
   orderInfoContainer: {
     padding: 20,
@@ -129,11 +137,18 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   orderDetail: {
-    fontSize: 18,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
     marginBottom: 5,
   },
+  orderLabel: {
+    fontSize: 18,
+  },
   orderValue: {
+    fontSize: 16,
     fontWeight: "bold",
+    color: Colors.blackTransparent,
   },
   radioContainer: {
     flexDirection: "row",
