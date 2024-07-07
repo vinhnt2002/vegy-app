@@ -12,20 +12,20 @@ import {
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import Colors from "@/constants/Colors";
-import useAppwrite from "@/lib/use-appwrite";
-import { getAllFarm } from "@/lib/actions/farm";
 import ItemProfile from "./items-profiles";
 import { useGlobalContext } from "@/context/global-provider";
-import { LinearGradient } from 'expo-linear-gradient';
-const FarmItem = ({ farm }:any) => (
+import { LinearGradient } from "expo-linear-gradient";
+import useAppwrite from "@/lib/use-appwrite";
+import { getFarmsWithPurchasedSlots } from "@/lib/actions/payment";
+
+const FarmItem = ({ farm }: any) => (
   <View style={styles.farmItem}>
     <Image source={{ uri: farm.image }} style={styles.farmImage} />
     <Text style={styles.farmName}>{farm.name}</Text>
-    <Text style={styles.farmDetails}>{farm.size} hectares</Text>
   </View>
 );
 const ProfileComponent = () => {
-  const { data: farms, refetch } = useAppwrite(getAllFarm);
+  const { data: farms, refetch ,loading} = useAppwrite(getFarmsWithPurchasedSlots);
   const { user } = useGlobalContext();
 
   const farmCount = farms.length;
@@ -37,42 +37,39 @@ const ProfileComponent = () => {
 
   return (
     <SafeAreaView style={styles.safeArea}>
-    <ScrollView
-      showsVerticalScrollIndicator={false}
-      contentContainerStyle={styles.container}
-    >
-      <LinearGradient
-        colors={[Colors.primaryColor, Colors.secondaryColor]}
-        style={styles.header}
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={styles.container}
       >
-        <Image
-          source={{ uri: user?.avatar }}
-          style={styles.avatar}
-        />
-        <Text style={styles.username}>{user.username}</Text>
-        <Text style={styles.email}>{user.email}</Text>
-        <TouchableOpacity style={styles.editButton}>
-          <Ionicons name="pencil" size={16} color={Colors.white} />
-          <Text style={styles.editButtonText}>Chỉnh sửa thông tin</Text>
-        </TouchableOpacity>
-      </LinearGradient>
+        <LinearGradient
+          colors={[Colors.primaryColor, Colors.secondaryColor]}
+          style={styles.header}
+        >
+          <Image source={{ uri: user?.avatar }} style={styles.avatar} />
+          <Text style={styles.username}>{user.username}</Text>
+          <Text style={styles.email}>{user.email}</Text>
+          <TouchableOpacity style={styles.editButton}>
+            <Ionicons name="pencil" size={16} color={Colors.white} />
+            <Text style={styles.editButtonText}>Chỉnh sửa thông tin</Text>
+          </TouchableOpacity>
+        </LinearGradient>
 
-      <View style={styles.statsContainer}>
-        <View style={styles.statItem}>
-          <Text style={styles.statValue}>{farmCount}</Text>
-          <Text style={styles.statLabel}>Farms</Text>
+        <View style={styles.statsContainer}>
+          <View style={styles.statItem}>
+            <Text style={styles.statValue}>{farmCount}</Text>
+            <Text style={styles.statLabel}>Farms</Text>
+          </View>
+          <View style={styles.statItem}>
+            <Text style={styles.statValue}>{seedsCount}</Text>
+            <Text style={styles.statLabel}>Seeds</Text>
+          </View>
+          <View style={styles.statItem}>
+            <Text style={styles.statValue}>{walletCount}</Text>
+            <Text style={styles.statLabel}>Wallet</Text>
+          </View>
         </View>
-        <View style={styles.statItem}>
-          <Text style={styles.statValue}>{seedsCount}</Text>
-          <Text style={styles.statLabel}>Seeds</Text>
-        </View>
-        <View style={styles.statItem}>
-          <Text style={styles.statValue}>{walletCount}</Text>
-          <Text style={styles.statLabel}>Wallet</Text>
-        </View>
-      </View>
 
-      {/* <View style={styles.infoContainer}>
+        {/* <View style={styles.infoContainer}>
         <ItemProfile
           farmCount={farmCount}
           seedsCount={seedsCount}
@@ -83,18 +80,18 @@ const ProfileComponent = () => {
         />
       </View> */}
 
-      <View style={styles.farmListContainer}>
-        <Text style={styles.farmListTitle}>Your Farms</Text>
-        <FlatList
-          data={farms}
-          renderItem={({ item }:any) => <FarmItem farm={item} />}
-          keyExtractor={(item:any) => item.$id}
-          horizontal
-          showsHorizontalScrollIndicator={false}
-        />
-      </View>
-    </ScrollView>
-  </SafeAreaView>
+        <View style={styles.farmListContainer}>
+          <Text style={styles.farmListTitle}>Trang trại bạn đã thuê đất</Text>
+          <FlatList
+            data={farms}
+            renderItem={({ item }: any) => <FarmItem farm={item} />}
+            keyExtractor={(item: any) => item.$id}
+            horizontal
+            showsHorizontalScrollIndicator={false}
+          />
+        </View>
+      </ScrollView>
+    </SafeAreaView>
   );
 };
 
@@ -135,7 +132,7 @@ const styles = StyleSheet.create({
   editButton: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: 'rgba(255, 255, 255, 0.3)',
+    backgroundColor: "rgba(255, 255, 255, 0.3)",
     paddingVertical: 8,
     paddingHorizontal: 15,
     borderRadius: 20,
@@ -146,8 +143,8 @@ const styles = StyleSheet.create({
     fontWeight: "600",
   },
   statsContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
+    flexDirection: "row",
+    justifyContent: "space-around",
     paddingVertical: 20,
     backgroundColor: Colors.white,
     borderRadius: 20,
@@ -163,11 +160,11 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   statItem: {
-    alignItems: 'center',
+    alignItems: "center",
   },
   statValue: {
     fontSize: 20,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     color: Colors.primaryColor,
   },
   statLabel: {
@@ -183,7 +180,7 @@ const styles = StyleSheet.create({
   },
   farmListTitle: {
     fontSize: 20,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginBottom: 10,
     color: Colors.primaryColor,
   },
@@ -203,14 +200,14 @@ const styles = StyleSheet.create({
     elevation: 4,
   },
   farmImage: {
-    width: '100%',
+    width: "100%",
     height: 100,
     borderRadius: 10,
     marginBottom: 10,
   },
   farmName: {
     fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginBottom: 5,
   },
   farmDetails: {

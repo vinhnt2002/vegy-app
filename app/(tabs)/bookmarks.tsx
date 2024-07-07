@@ -5,14 +5,13 @@ import { Image, StyleSheet, Text, View, TouchableOpacity, Alert } from "react-na
 
 const Page = () => {
   const qrUrl = "https://img.vietqr.io/image/ACB-14282297-compact.png?amount=100000";
-                  // 'httpimage/account?amount={}'
 
   const handlePayment = async () => {
     try {
       const currentUser = await getCurrentUser();
       if (currentUser) {
        
-        await createPayment(currentUser.$id, 100000, 'completed', "66851ea2a34d94aef321", "BANK");
+        await createPayment(currentUser.$id, 120000, 'completed', "66851e959863f1a2111f", "BANK");
         Alert.alert("Thành công", "Thanh toán đã được xử lý và lưu thành công!");
       } else {
         Alert.alert("Lỗi", "Không tìm thấy thông tin người dùng.");

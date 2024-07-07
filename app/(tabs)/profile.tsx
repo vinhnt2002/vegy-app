@@ -7,7 +7,7 @@ import { Stack, router } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 
 const ProfilePage = () => {
-  const isLogged = true;
+
   return (
     <>
       <Stack.Screen options={{ headerShown: false }} />

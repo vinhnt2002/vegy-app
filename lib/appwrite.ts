@@ -18,6 +18,8 @@ export const appwriteConfig = {
   farmCollectionId: "668504bd00148051300b",
   slotCollectionId: "6685078900288d1b8d4e",
   paymentCollectionId: "66850991001848692504",
+  seedCollectionId: "668a7d4a0004dd02d4de",
+  plantCollectionId: "668a81cf003d8edf52ec",
 };
 
 
