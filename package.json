@@ -19,6 +19,7 @@
     "@react-native-picker/picker": "^2.7.7",
     "@react-navigation/native": "^6.0.2",
     "expo": "~50.0.14",
+    "expo-barcode-scanner": "^13.0.1",
     "expo-font": "~11.10.3",
     "expo-linear-gradient": "^13.0.2",
     "expo-linking": "~6.2.2",

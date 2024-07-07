@@ -1,21 +1,41 @@
-import { Image, SafeAreaView, StyleSheet, Text, View } from "react-native";
+import { createPayment } from "@/lib/actions/payment";
+import { getCurrentUser } from "@/lib/appwrite";
 import React from "react";
-import VietQRGenerator from "@/components/payment/vietqr-generator";
-import VietQRScanner from "@/components/payment/vietqr-scanner";
+import { Image, StyleSheet, Text, View, TouchableOpacity, Alert } from "react-native";
 
 const Page = () => {
   const qrUrl = "https://img.vietqr.io/image/ACB-14282297-compact.png?amount=100000";
+                  // 'httpimage/account?amount={}'
+
+  const handlePayment = async () => {
+    try {
+      const currentUser = await getCurrentUser();
+      if (currentUser) {
+       
+        await createPayment(currentUser.$id, 100000, 'completed', "66851ea2a34d94aef321", "BANK");
+        Alert.alert("Thành công", "Thanh toán đã được xử lý và lưu thành công!");
+      } else {
+        Alert.alert("Lỗi", "Không tìm thấy thông tin người dùng.");
+      }
+    } catch (error) {
+      console.error('Lỗi khi xử lý thanh toán:', error);
+      Alert.alert("Lỗi", "Đã xảy ra lỗi khi xử lý thanh toán.");
+    }
+  };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Scan to Pay</Text>
+      <Text style={styles.title}>Quét để Thanh toán</Text>
       <Image
         style={styles.qrImage}
         source={{ uri: qrUrl }}
-        onError={(e) => console.log('Error loading image:', e.nativeEvent.error)}
+        onError={(e) => console.log('Lỗi khi tải hình ảnh:', e.nativeEvent.error)}
       />
+      <TouchableOpacity style={styles.button} onPress={handlePayment}>
+        <Text style={styles.buttonText}>Xác nhận Thanh toán</Text>
+      </TouchableOpacity>
     </View>
-  )
+  );
 };
 
 export default Page;
@@ -34,5 +54,15 @@ const styles = StyleSheet.create({
   qrImage: {
     width: 200,
     height: 200,
+    marginBottom: 20,
+  },
+  button: {
+    backgroundColor: '#007AFF',
+    padding: 10,
+    borderRadius: 5,
+  },
+  buttonText: {
+    color: '#fff',
+    fontSize: 16,
   },
 });

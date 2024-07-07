@@ -1,115 +1,220 @@
-import React from 'react';
-import { StyleSheet, Text, View, Image, TouchableOpacity, ScrollView, ImageBackground } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
-import Colors from '@/constants/Colors';
-import useAppwrite from '@/lib/use-appwrite';
-import { getAllFarm } from '@/lib/actions/farm';
-import ItemProfile from './items-profiles';
-
+import React from "react";
+import {
+  StyleSheet,
+  Text,
+  View,
+  Image,
+  TouchableOpacity,
+  ScrollView,
+  ImageBackground,
+  SafeAreaView,
+  FlatList,
+} from "react-native";
+import { Ionicons } from "@expo/vector-icons";
+import Colors from "@/constants/Colors";
+import useAppwrite from "@/lib/use-appwrite";
+import { getAllFarm } from "@/lib/actions/farm";
+import ItemProfile from "./items-profiles";
+import { useGlobalContext } from "@/context/global-provider";
+import { LinearGradient } from 'expo-linear-gradient';
+const FarmItem = ({ farm }:any) => (
+  <View style={styles.farmItem}>
+    <Image source={{ uri: farm.image }} style={styles.farmImage} />
+    <Text style={styles.farmName}>{farm.name}</Text>
+    <Text style={styles.farmDetails}>{farm.size} hectares</Text>
+  </View>
+);
 const ProfileComponent = () => {
   const { data: farms, refetch } = useAppwrite(getAllFarm);
+  const { user } = useGlobalContext();
 
-  const farmCount = farms.length; // Update this according to your data structure
-  const seedsCount = 50; // Replace this with actual seeds count
-  const walletCount = 4; // Replace this with actual seeds count
-  const otherCount = 30; // Replace this with actual other items count
-  const transportCount = 8; // Replace this with actual seeds count
-  const orderCount = 12; // Replace this with actual other items count
+  const farmCount = farms.length;
+  const seedsCount = 50;
+  const walletCount = 4;
+  const otherCount = 30;
+  const transportCount = 8;
+  const orderCount = 12;
 
-  return (<>
-      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.container}>
-      <ImageBackground 
-        source={require('@/assets/images/farm/farm-bg.png')}
+  return (
+    <SafeAreaView style={styles.safeArea}>
+    <ScrollView
+      showsVerticalScrollIndicator={false}
+      contentContainerStyle={styles.container}
+    >
+      <LinearGradient
+        colors={[Colors.primaryColor, Colors.secondaryColor]}
         style={styles.header}
       >
         <Image
-          source={require('@/assets/images/avatarUser/user3.png')}
+          source={{ uri: user?.avatar }}
           style={styles.avatar}
         />
+        <Text style={styles.username}>{user.username}</Text>
+        <Text style={styles.email}>{user.email}</Text>
         <TouchableOpacity style={styles.editButton}>
-          <Ionicons name="pencil" size={20} color={Colors.white} />
+          <Ionicons name="pencil" size={16} color={Colors.white} />
           <Text style={styles.editButtonText}>Chỉnh sửa thông tin</Text>
         </TouchableOpacity>
-      </ImageBackground>
-      
-      <View style={styles.infoContainer}>
-        <View style={styles.infoItem}>
-          <Text style={styles.label}>Họ và tên:</Text>
-          <Text style={styles.value}>Nguyễn Văn A</Text>
+      </LinearGradient>
+
+      <View style={styles.statsContainer}>
+        <View style={styles.statItem}>
+          <Text style={styles.statValue}>{farmCount}</Text>
+          <Text style={styles.statLabel}>Farms</Text>
         </View>
-        <View style={styles.infoItem}>
-          <Text style={styles.label}>Tuổi:</Text>
-          <Text style={styles.value}>30</Text>
+        <View style={styles.statItem}>
+          <Text style={styles.statValue}>{seedsCount}</Text>
+          <Text style={styles.statLabel}>Seeds</Text>
         </View>
-        <View style={styles.infoItem}>
-          <Text style={styles.label}>Giới tính:</Text>
-          <Text style={styles.value}>Nam</Text>
-        </View>
-        <View style={styles.infoItem}>
-          <Text style={styles.label}>Số điện thoại:</Text>
-          <Text style={styles.value}>0123456789</Text>
-        </View>
-        <View style={styles.infoItem}>
-          <Text style={styles.label}>Địa chỉ:</Text>
-          <Text style={styles.value}>123 Đường ABC, Phường XYZ, TP. Hồ Chí Minh</Text>
+        <View style={styles.statItem}>
+          <Text style={styles.statValue}>{walletCount}</Text>
+          <Text style={styles.statLabel}>Wallet</Text>
         </View>
       </View>
-      <View>
-      <ItemProfile farmCount={farmCount} seedsCount={seedsCount} walletCount={walletCount} otherCount={otherCount} orderCount={orderCount} transportCount={transportCount} />
+
+      {/* <View style={styles.infoContainer}>
+        <ItemProfile
+          farmCount={farmCount}
+          seedsCount={seedsCount}
+          walletCount={walletCount}
+          otherCount={otherCount}
+          orderCount={orderCount}
+          transportCount={transportCount}
+        />
+      </View> */}
+
+      <View style={styles.farmListContainer}>
+        <Text style={styles.farmListTitle}>Your Farms</Text>
+        <FlatList
+          data={farms}
+          renderItem={({ item }:any) => <FarmItem farm={item} />}
+          keyExtractor={(item:any) => item.$id}
+          horizontal
+          showsHorizontalScrollIndicator={false}
+        />
       </View>
     </ScrollView>
-  </>
-
+  </SafeAreaView>
   );
 };
 
 export default ProfileComponent;
 
 const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: Colors.bgColor,
+  },
   container: {
     flexGrow: 1,
-    backgroundColor: Colors.bgColor,
-    paddingVertical: 20,
   },
   header: {
-    alignItems: 'center',
-    paddingVertical: 20,
-    // Không cần backgroundColor nữa vì đã có hình nền
+    alignItems: "center",
+    paddingVertical: 30,
+    borderBottomLeftRadius: 30,
+    borderBottomRightRadius: 30,
   },
   avatar: {
-    width: 40,
-    height: 40,
-    borderRadius: 20, // Giữ nguyên borderRadius để tạo hình tròn
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    borderWidth: 3,
+    borderColor: Colors.white,
+  },
+  username: {
+    fontSize: 24,
+    fontWeight: "bold",
+    color: Colors.white,
+    marginTop: 10,
+  },
+  email: {
+    fontSize: 16,
+    color: Colors.lightGrey,
+    marginBottom: 10,
   },
   editButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginTop: 10,
-    backgroundColor: Colors.secondaryColor,
-    paddingVertical: 5,
-    paddingHorizontal: 10,
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: 'rgba(255, 255, 255, 0.3)',
+    paddingVertical: 8,
+    paddingHorizontal: 15,
     borderRadius: 20,
   },
   editButtonText: {
     marginLeft: 5,
     color: Colors.white,
+    fontWeight: "600",
+  },
+  statsContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    paddingVertical: 20,
+    backgroundColor: Colors.white,
+    borderRadius: 20,
+    marginTop: -20,
+    marginHorizontal: 20,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
+  statItem: {
+    alignItems: 'center',
+  },
+  statValue: {
+    fontSize: 20,
     fontWeight: 'bold',
+    color: Colors.primaryColor,
+  },
+  statLabel: {
+    fontSize: 14,
+    color: Colors.darkGrey,
   },
   infoContainer: {
     padding: 20,
   },
-  infoItem: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginVertical: 10,
+  farmListContainer: {
+    marginTop: 20,
+    paddingHorizontal: 20,
   },
-  label: {
+  farmListTitle: {
+    fontSize: 20,
     fontWeight: 'bold',
-    fontSize: 16,
-    color: Colors.black,
+    marginBottom: 10,
+    color: Colors.primaryColor,
   },
-  value: {
+  farmItem: {
+    width: 150,
+    marginRight: 15,
+    backgroundColor: Colors.white,
+    borderRadius: 10,
+    padding: 10,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.23,
+    shadowRadius: 2.62,
+    elevation: 4,
+  },
+  farmImage: {
+    width: '100%',
+    height: 100,
+    borderRadius: 10,
+    marginBottom: 10,
+  },
+  farmName: {
     fontSize: 16,
+    fontWeight: 'bold',
+    marginBottom: 5,
+  },
+  farmDetails: {
+    fontSize: 14,
     color: Colors.darkGrey,
   },
 });

@@ -7,12 +7,10 @@ import { Stack, router } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 
 const ProfilePage = () => {
-  const isLogged = true
+  const isLogged = true;
   return (
     <>
-      <Stack.Screen
-      options={{headerShown : false}}
-      />
+      <Stack.Screen options={{ headerShown: false }} />
       <View style={styles.container}>
         <ProfileComponent />
       </View>
@@ -25,7 +23,6 @@ export default ProfilePage;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    marginTop:12,
     backgroundColor: Colors.bgColor,
   },
 });
