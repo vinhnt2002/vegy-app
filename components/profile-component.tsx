@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import {
   StyleSheet,
   Text,
@@ -6,18 +6,17 @@ import {
   Image,
   TouchableOpacity,
   ScrollView,
+  ImageBackground,
   SafeAreaView,
   FlatList,
-  Alert,
-  ActivityIndicator,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import Colors from "@/constants/Colors";
+import ItemProfile from "./items-profiles";
 import { useGlobalContext } from "@/context/global-provider";
 import { LinearGradient } from "expo-linear-gradient";
 import useAppwrite from "@/lib/use-appwrite";
 import { getFarmsWithPurchasedSlots } from "@/lib/actions/payment";
-import { useRouter } from "expo-router";
 
 const FarmItem = ({ farm }: any) => (
   <View style={styles.farmItem}>
@@ -25,63 +24,13 @@ const FarmItem = ({ farm }: any) => (
     <Text style={styles.farmName}>{farm.name}</Text>
   </View>
 );
-
 const ProfileComponent = () => {
-  const { data: farms, refetch, loading } = useAppwrite(getFarmsWithPurchasedSlots);
+  const {
+    data: farms,
+    refetch,
+    loading,
+  } = useAppwrite(getFarmsWithPurchasedSlots);
   const { user } = useGlobalContext();
-  const router = useRouter();
-
-  useEffect(() => {
-    if (user) {
-      const fetchFarms = async () => {
-        try {
-          await refetch();
-        } catch (error) {
-          console.error('Error fetching farms with purchased slots:', error);
-          // Alert.alert("Error", "An error occurred while fetching the farms data.");
-        }
-      };
-
-      fetchFarms();
-    }
-  }, [user, refetch]);
-
-  const handleLoginPress = () => {
-    router.push("/(auth)/sign-in");
-  };
-
-  if (!user) {
-    return (
-      <SafeAreaView style={styles.safeArea}>
-        <View style={styles.container}>
-          <Text style={styles.message}>Vui lòng đăng nhập hoặc đăng ký.</Text>
-          <TouchableOpacity style={styles.loginButton} onPress={handleLoginPress}>
-            <Text style={styles.loginButtonText}>Đăng nhập</Text>
-          </TouchableOpacity>
-        </View>
-      </SafeAreaView>
-    );
-  }
-
-  if (loading) {
-    return (
-      <SafeAreaView style={styles.safeArea}>
-        <View style={styles.container}>
-          <ActivityIndicator size="large" color={Colors.primaryColor} />
-        </View>
-      </SafeAreaView>
-    );
-  }
-
-  if (!farms || farms.length === 0) {
-    return (
-      <SafeAreaView style={styles.safeArea}>
-        <View style={styles.container}>
-          <Text style={styles.message}>No farms data available.</Text>
-        </View>
-      </SafeAreaView>
-    );
-  }
 
   const farmCount = farms.length;
   const seedsCount = 50;
@@ -121,6 +70,17 @@ const ProfileComponent = () => {
           </View>
         </View>
 
+        {/* <View style={styles.infoContainer}>
+        <ItemProfile
+          farmCount={farmCount}
+          seedsCount={seedsCount}
+          walletCount={walletCount}
+          otherCount={otherCount}
+          orderCount={orderCount}
+          transportCount={transportCount}
+        />
+      </View> */}
+
         <View style={styles.farmListContainer}>
           <Text style={styles.farmListTitle}>Trang trại bạn đã thuê đất</Text>
           <FlatList
@@ -145,9 +105,6 @@ const styles = StyleSheet.create({
   },
   container: {
     flexGrow: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 20,
   },
   header: {
     alignItems: "center",
@@ -215,6 +172,9 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: Colors.darkGrey,
   },
+  infoContainer: {
+    padding: 20,
+  },
   farmListContainer: {
     marginTop: 20,
     paddingHorizontal: 20,
@@ -251,19 +211,8 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     marginBottom: 5,
   },
-  message: {
-    fontSize: 18,
-    marginBottom: 20,
-    textAlign: "center",
-  },
-  loginButton: {
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    backgroundColor: Colors.primaryColor,
-    borderRadius: 5,
-  },
-  loginButtonText: {
-    color: Colors.white,
-    fontSize: 16,
+  farmDetails: {
+    fontSize: 14,
+    color: Colors.darkGrey,
   },
 });

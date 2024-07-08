@@ -42,30 +42,31 @@ export async function createPayment(
   }
 }
 
-
 export async function getFarmsWithPurchasedSlots() {
   try {
     const currentUser = await getCurrentUser();
-    if (!currentUser) {
-      throw new Error("User not authenticated");
-      // alert("User not authenticated");
-    }
+    // if (!currentUser) {
+    //   throw new Error("User not authenticated");
+
+    // }
     // 1. Lấy tất cả các payment đã hoàn thành của user
     const payments = await databases.listDocuments(
       appwriteConfig.databaseId,
       appwriteConfig.paymentCollectionId,
       [
         Query.equal("userId", currentUser.$id),
-        Query.equal("status", "completed")
+        Query.equal("status", "completed"),
       ]
     );
 
     // 2. Lấy tất cả các slotId từ các payment
-    // const slotIds = payments.documents.map((payment: any) => payment.slotId.$id);
+    // const slotIds = payments.documents.map(
+    //   (payment: any) => payment.slotId.$id
+    // );
     //add null checks
     const slotIds = payments.documents
-  .filter((payment: any) => payment.slotId && payment.slotId.$id)
-  .map((payment: any) => payment.slotId.$id);
+      .filter((payment: any) => payment.slotId && payment.slotId.$id)
+      .map((payment: any) => payment.slotId.$id);
     // console.log("SlotIds:", slotIds);
 
     // Nếu không có slot nào được thanh toán, trả về mảng rỗng
@@ -77,14 +78,14 @@ export async function getFarmsWithPurchasedSlots() {
     const slots = await databases.listDocuments(
       appwriteConfig.databaseId,
       appwriteConfig.slotCollectionId,
-      [
-        Query.equal("$id", slotIds)
-      ]
+      [Query.equal("$id", slotIds)]
     );
     // console.log("Slots:", slots);
 
     // 4. Lấy tất cả các farmId từ các slot
-    const farmIds = [...new Set(slots.documents.map((slot: any) => slot.farmId.$id))];
+    const farmIds = [
+      ...new Set(slots.documents.map((slot: any) => slot.farmId.$id)),
+    ];
     // console.log("FarmIds:", farmIds);
 
     // Nếu không có farm nào, trả về mảng rỗng
@@ -96,9 +97,7 @@ export async function getFarmsWithPurchasedSlots() {
     const farms = await databases.listDocuments(
       appwriteConfig.databaseId,
       appwriteConfig.farmCollectionId,
-      [
-        Query.equal("$id", farmIds)
-      ]
+      [Query.equal("$id", farmIds)]
     );
 
     return farms.documents;
