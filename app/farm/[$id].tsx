@@ -38,22 +38,22 @@ const FarmSlotDetails = ({ route }: any) => {
       plants: [
         {
           name: "Cà chua",
-          image: require("@/assets/images/wallets/visa.png"),
+          image: require("@/assets/images/seeds/tomato.png"),
           age: 15,
         },
         {
           name: "Ớt",
-          image: require("@/assets/images/wallets/visa.png"),
+          image: require("@/assets/images/seeds/pepper.png"),
           age: 10,
         },
         {
           name: "Ớt",
-          image: require("@/assets/images/wallets/visa.png"),
+          image: require("@/assets/images/seeds/pepper.png"),
           age: 10,
         },
         {
           name: "Ớt",
-          image: require("@/assets/images/wallets/visa.png"),
+          image: require("@/assets/images/seeds/pepper.png"),
           age: 10,
         },
       ],
@@ -63,7 +63,7 @@ const FarmSlotDetails = ({ route }: any) => {
       plants: [
         {
           name: "Dưa chuột",
-          image: require("@/assets/images/wallets/visa.png"),
+          image: require("@/assets/images/seeds/cucumber.png"),
           age: 20,
         },
       ],
@@ -74,9 +74,9 @@ const FarmSlotDetails = ({ route }: any) => {
   const [modalVisible, setModalVisible] = useState(false);
 
   const seeds = [
-    { name: "Cà chua", image: require("@/assets/images/wallets/visa.png") },
-    { name: "Dưa chuột", image: require("@/assets/images/wallets/visa.png") },
-    { name: "Ớt", image: require("@/assets/images/wallets/visa.png") },
+    { name: "Cà chua", image: require("@/assets/images/seeds/tomato.png") },
+    { name: "Dưa chuột", image: require("@/assets/images/seeds/cucumber.png") },
+    { name: "Ớt", image: require("@/assets/images/seeds/pepper.png") },
     // Thêm các loại hạt giống khác ở đây
   ];
 

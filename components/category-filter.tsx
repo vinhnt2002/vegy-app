@@ -91,8 +91,6 @@ const CategoryFilter = () => {
           
         </TouchableOpacity>
       </Link>
-
-
     </>
 
 

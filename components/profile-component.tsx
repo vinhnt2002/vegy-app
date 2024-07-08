@@ -31,9 +31,7 @@ const ProfileComponent = () => {
   const farmCount = farms.length;
   const seedsCount = 50;
   const walletCount = 4;
-  const otherCount = 30;
-  const transportCount = 8;
-  const orderCount = 12;
+
 
   return (
     <SafeAreaView style={styles.safeArea}>
