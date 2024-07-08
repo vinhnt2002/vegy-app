@@ -46,6 +46,10 @@ export async function createPayment(
 export async function getFarmsWithPurchasedSlots() {
   try {
     const currentUser = await getCurrentUser();
+    if (!currentUser) {
+      throw new Error("User not authenticated");
+      // alert("User not authenticated");
+    }
     // 1. Lấy tất cả các payment đã hoàn thành của user
     const payments = await databases.listDocuments(
       appwriteConfig.databaseId,
@@ -57,7 +61,11 @@ export async function getFarmsWithPurchasedSlots() {
     );
 
     // 2. Lấy tất cả các slotId từ các payment
-    const slotIds = payments.documents.map((payment: any) => payment.slotId.$id);
+    // const slotIds = payments.documents.map((payment: any) => payment.slotId.$id);
+    //add null checks
+    const slotIds = payments.documents
+  .filter((payment: any) => payment.slotId && payment.slotId.$id)
+  .map((payment: any) => payment.slotId.$id);
     // console.log("SlotIds:", slotIds);
 
     // Nếu không có slot nào được thanh toán, trả về mảng rỗng
