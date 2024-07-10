@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import {
   View,
@@ -41,7 +40,7 @@ const CategoryFilter = () => {
     // Filter by category
     if (category !== "Tất cả") {
       tempFarms = tempFarms.filter((farm) => {
-        const farmLocation = farm.location.split(',')[0].trim().toLowerCase();
+        const farmLocation = farm.location.split(",")[0].trim().toLowerCase();
         return farmLocation === category.toLowerCase();
       });
     }
@@ -69,6 +68,7 @@ const CategoryFilter = () => {
             title: "",
           }}
         />
+
         <Link href={`/listing/${item.$id}`} asChild>
           <TouchableOpacity>
             <View style={[styles.item, { width: (width - 60) / 2 }]}>
@@ -136,7 +136,6 @@ const CategoryFilter = () => {
     </View>
   );
 };
-
 
 const styles = StyleSheet.create({
   container: {

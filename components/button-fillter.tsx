@@ -36,7 +36,7 @@ const CategoryButtons = ({ onCagtegoryChanged }: Props) => {
   };
 
   return (
-    <View>
+    <View style={styles.Container} >
       <ScrollView
         ref={scrollRef}
         horizontal
@@ -82,6 +82,10 @@ const CategoryButtons = ({ onCagtegoryChanged }: Props) => {
 export default CategoryButtons;
 
 const styles = StyleSheet.create({
+  Container:{
+    flex:1,
+    backgroundColor:Colors.bgColor,
+  },
   categoryBtn: {
     flexDirection: "row",
     alignItems: "center",
