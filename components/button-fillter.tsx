@@ -1,5 +1,12 @@
 import React, { useRef, useState } from "react";
-import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import {
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+  Dimensions,
+} from "react-native";
 import Colors from "@/constants/Colors";
 import destinationCategories from "@/data/categories";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
@@ -10,16 +17,20 @@ type Props = {
 
 const CategoryButtons = ({ onCagtegoryChanged }: Props) => {
   const scrollRef = useRef<ScrollView>(null);
-  const itemRef = useRef<TouchableOpacity[] | null[]>([]);
+  const itemRefs = useRef<TouchableOpacity[]>([]);
   const [activeIndex, setActiveIndex] = useState(0);
 
   const handleSelectCategory = (index: number) => {
-    const selected = itemRef.current[index];
     setActiveIndex(index);
 
-    selected?.measure((x) => {
-      scrollRef.current?.scrollTo({ x: x, y: 0, animated: true });
-    });
+    itemRefs.current[index]?.measureLayout(
+      scrollRef.current!,
+      (x, y, width, height) => {
+        const screenWidth = Dimensions.get("window").width;
+        const scrollToX = x - (screenWidth - width) / 2;
+        scrollRef.current?.scrollTo({ x: scrollToX, y: 0, animated: true });
+      }
+    );
 
     onCagtegoryChanged(destinationCategories[index].title);
   };
@@ -31,7 +42,7 @@ const CategoryButtons = ({ onCagtegoryChanged }: Props) => {
         horizontal
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={{
-          gap: 20,
+          paddingHorizontal: 20,
           paddingVertical: 10,
           marginBottom: 10,
         }}
@@ -39,7 +50,7 @@ const CategoryButtons = ({ onCagtegoryChanged }: Props) => {
         {destinationCategories.map((item, index) => (
           <TouchableOpacity
             key={index}
-            ref={(el) => itemRef.current[index] = el}
+            ref={(ref) => (itemRefs.current[index] = ref!)}
             onPress={() => handleSelectCategory(index)}
             style={
               activeIndex === index
@@ -71,11 +82,6 @@ const CategoryButtons = ({ onCagtegoryChanged }: Props) => {
 export default CategoryButtons;
 
 const styles = StyleSheet.create({
-  title: {
-    fontSize: 22,
-    fontWeight: "700",
-    color: Colors.black,
-  },
   categoryBtn: {
     flexDirection: "row",
     alignItems: "center",
@@ -83,6 +89,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 10,
     borderRadius: 10,
+    marginHorizontal: 10,
     shadowColor: "#333333",
     shadowOffset: { width: 1, height: 2 },
     shadowOpacity: 0.1,
@@ -95,6 +102,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 10,
     borderRadius: 10,
+    marginHorizontal: 10,
     shadowColor: "#333333",
     shadowOffset: { width: 1, height: 2 },
     shadowOpacity: 0.1,

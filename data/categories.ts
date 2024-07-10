@@ -4,11 +4,11 @@ const destinationCategories = [
     iconName: "map-marker",
   },
   {
-    title: "Đà Lạt, VietNam",
+    title: "Đà Lạt",
     iconName: "city",
   },
   {
-    title: "Đồng nai, VietNam",
+    title: "Đồng nai",
     iconName: "terrain",
   },
   {

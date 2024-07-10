@@ -1,51 +1,59 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, StyleSheet, Dimensions, ScrollView, FlatList, TouchableOpacity, Image } from 'react-native';
-import productData from '@/data/product.json';
-import Colors from '@/constants/Colors';
-import CategoryButtons from './button-fillter';
-import { getAllFarm } from '@/lib/actions/farm';
-import useAppwrite from '@/lib/use-appwrite';
-import { ListingType } from '@/types/listingType';
-import { FontAwesome5, Ionicons } from '@expo/vector-icons';
-import { Link, Stack } from 'expo-router';
 
-const { width } = Dimensions.get('window');
+import React, { useState, useEffect } from "react";
+import {
+  View,
+  Text,
+  TextInput,
+  StyleSheet,
+  Dimensions,
+  FlatList,
+  TouchableOpacity,
+  Image,
+} from "react-native";
+import Colors from "@/constants/Colors";
+import CategoryButtons from "./button-fillter";
+import { getAllFarm } from "@/lib/actions/farm";
+import useAppwrite from "@/lib/use-appwrite";
+import { ListingType } from "@/types/listingType";
+import { FontAwesome5 } from "@expo/vector-icons";
+import { Link, Stack } from "expo-router";
+import StarRating from "./loader/star-rating";
 
-type Package = {
-  id: number;
-  name: string;
-  type: string;
-  category: string;
-};
+const { width } = Dimensions.get("window");
 
 const CategoryFilter = () => {
-  const [packages, setPackages] = useState<Package[]>([]);
-  const [filteredPackages, setFilteredPackages] = useState<Package[]>([]);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [selectedType, setSelectedType] = useState('all'); // Set default value to 'all'
+  const [searchTerm, setSearchTerm] = useState("");
   const { data: farms, refetch } = useAppwrite(getAllFarm);
-  const [category, setCategory] = useState("All");
+  const [category, setCategory] = useState("Tất cả");
+  const [filteredFarms, setFilteredFarms] = useState<ListingType[]>([]);
 
   useEffect(() => {
-    setPackages(productData);
-    setFilteredPackages(productData);
-  }, []);
+    if (farms) {
+      filterFarms();
+    }
+  }, [category, searchTerm, farms]);
 
-  useEffect(() => {
-    filterPackages();
-  }, [searchTerm, selectedType]);
+  const filterFarms = () => {
+    if (!farms) return;
 
-  const filterPackages = () => {
-    let tempPackages = packages;
+    let tempFarms = farms as ListingType[];
+
+    // Filter by category
+    if (category !== "Tất cả") {
+      tempFarms = tempFarms.filter((farm) => {
+        const farmLocation = farm.location.split(',')[0].trim().toLowerCase();
+        return farmLocation === category.toLowerCase();
+      });
+    }
+
+    // Filter by search term
     if (searchTerm) {
-      tempPackages = tempPackages.filter(pkg =>
-        pkg.name.toLowerCase().includes(searchTerm.toLowerCase())
+      tempFarms = tempFarms.filter((farm) =>
+        farm.name.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
-    if (selectedType && selectedType !== 'all') {
-      tempPackages = tempPackages.filter(pkg => pkg.type === selectedType);
-    }
-    setFilteredPackages(tempPackages);
+
+    setFilteredFarms(tempFarms);
   };
 
   const onCatChanged = (category: string) => {
@@ -53,31 +61,26 @@ const CategoryFilter = () => {
     setCategory(category);
   };
 
-  // Render từng mục của danh sách
   const renderItems = ({ item }: { item: ListingType }) => {
-    return (<>
-      <Stack.Screen
-        options={{
-          title: "",
-
-        }}
-      />
-      <Link href={`/listing/${item.$id}`} asChild>
-        <TouchableOpacity>
-          <View style={[styles.item, { width: (width - 60) / 2 }]}>
-            <Image source={{ uri: item.image }} style={styles.image} />
-            {/* <View style={styles.bookmark}>
-              <Ionicons
-                name="bookmark-outline"
-                size={20}
-                color={Colors.white}
-              />
-            </View> */}
-            <Text style={styles.itemTxt} numberOfLines={1} ellipsizeMode="tail">
-              {item.name}
-            </Text>
-            <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
-              <View style={{ flexDirection: "row", alignItems: "center" }}>
+    return (
+      <>
+        <Stack.Screen
+          options={{
+            title: "",
+          }}
+        />
+        <Link href={`/listing/${item.$id}`} asChild>
+          <TouchableOpacity>
+            <View style={[styles.item, { width: (width - 60) / 2 }]}>
+              <Image source={{ uri: item.image }} style={styles.image} />
+              <Text
+                style={styles.itemTxt}
+                numberOfLines={1}
+                ellipsizeMode="tail"
+              >
+                {item.name}
+              </Text>
+              <View style={styles.row}>
                 <FontAwesome5
                   name="map-marker-alt"
                   size={18}
@@ -85,16 +88,36 @@ const CategoryFilter = () => {
                 />
                 <Text style={styles.itemLocationTxt}>{item.location}</Text>
               </View>
-
+              <View style={styles.row}>
+                <StarRating rating={item.rating} />
+              </View>
             </View>
-          </View>
-          
-        </TouchableOpacity>
-      </Link>
-    </>
-
-
+          </TouchableOpacity>
+        </Link>
+      </>
     );
+  };
+
+  const renderContent = () => {
+    if (filteredFarms.length === 0) {
+      return (
+        <View style={styles.noResultsContainer}>
+          <Text style={styles.noResultsText}>No results found.</Text>
+        </View>
+      );
+    } else {
+      return (
+        <FlatList
+          data={filteredFarms}
+          renderItem={renderItems}
+          keyExtractor={(item) => item.$id}
+          numColumns={2}
+          columnWrapperStyle={{ justifyContent: "space-between" }}
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={styles.flatList}
+        />
+      );
+    }
   };
 
   return (
@@ -107,21 +130,13 @@ const CategoryFilter = () => {
         style={styles.input}
         placeholder="Search by name"
         value={searchTerm}
-        onChangeText={text => setSearchTerm(text)}
+        onChangeText={(text) => setSearchTerm(text)}
       />
-
-      <FlatList
-        data={farms}
-        renderItem={renderItems}
-        keyExtractor={(item) => item.$id}
-        numColumns={2}
-        columnWrapperStyle={{ justifyContent: 'space-between' }}
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={styles.flatList}
-      />
+      {renderContent()}
     </View>
   );
 };
+
 
 const styles = StyleSheet.create({
   container: {
@@ -129,9 +144,15 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     backgroundColor: Colors.bgColor,
   },
+  row: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginBottom: 8,
+  },
   input: {
     height: 40,
-    borderColor: '#ccc',
+    borderColor: "#ccc",
     borderWidth: 1,
     paddingHorizontal: 8,
     marginBottom: 16,
@@ -139,14 +160,14 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.white,
   },
   pickerContainer: {
-    position: 'absolute',
+    position: "absolute",
     marginTop: 20,
     top: 20,
     right: 20,
     zIndex: 1,
   },
   flatList: {
-    marginTop: 80, // Adjust marginTop to accommodate Picker's height
+    marginTop: 80,
   },
   item: {
     backgroundColor: Colors.white,
@@ -156,7 +177,7 @@ const styles = StyleSheet.create({
     marginRight: 10,
   },
   image: {
-    width: '100%',
+    width: "100%",
     height: 150,
     borderRadius: 10,
     marginBottom: 15,
@@ -185,6 +206,15 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: "600",
     color: Colors.primaryColor,
+  },
+  noResultsContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  noResultsText: {
+    fontSize: 18,
+    color: Colors.black,
   },
 });
 
