@@ -1,12 +1,20 @@
 import { StyleSheet, Text, View } from "react-native";
 import React from "react";
-import CategoryFilter from "@/components/category-filter";
+
+import { Stack } from "expo-router";
 
 const Page = () => {
   return (
-    <View style={styles.container}>
-      <CategoryFilter />
-    </View>
+    <>
+      <Stack.Screen
+        options={{
+          title: "Blog",
+        }}
+      />
+      <View style={styles.container}>
+        <Text>Blog here</Text>
+      </View>
+    </>
   );
 };
 

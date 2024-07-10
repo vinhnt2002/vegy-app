@@ -13,29 +13,7 @@ import Colors from "@/constants/Colors";
 import { createPayment } from "@/lib/actions/payment";
 import { getCurrentUser } from "@/lib/appwrite";
 
-// const paymentMethods = [
-//   {
-//     label: "Momo",
-//     value: "momo",
-//     image: require("@/assets/images/wallets/MoMo_Logo.png"),
-//   },
-//   {
-//     label: "VNPay",
-//     value: "vnpay",
-//     image: require("@/assets/images/wallets/vnpay.png"),
-//   },
-//   {
-//     label: "ZaloPay",
-//     value: "zalopay",
-//     image: require("@/assets/images/wallets/ZaloPay.png"),
-//   },
-//   {
-//     label: "Thẻ Visa",
-//     value: "visa",
-//     image: require("@/assets/images/wallets/visa.png"),
-//   },
-//   { label: "Thanh toán tại nông trại", value: "cash", image: null },
-// ];
+
 
 const PaymentScreen = () => {
   // const [selectedMethod, setSelectedMethod] = useState<string | null>(null);

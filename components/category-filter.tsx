@@ -66,13 +66,13 @@ const CategoryFilter = () => {
         <TouchableOpacity>
           <View style={[styles.item, { width: (width - 60) / 2 }]}>
             <Image source={{ uri: item.image }} style={styles.image} />
-            <View style={styles.bookmark}>
+            {/* <View style={styles.bookmark}>
               <Ionicons
                 name="bookmark-outline"
                 size={20}
                 color={Colors.white}
               />
-            </View>
+            </View> */}
             <Text style={styles.itemTxt} numberOfLines={1} ellipsizeMode="tail">
               {item.name}
             </Text>
@@ -85,7 +85,7 @@ const CategoryFilter = () => {
                 />
                 <Text style={styles.itemLocationTxt}>{item.location}</Text>
               </View>
-              <Text style={styles.itemPriceTxt}>${item.price}</Text>
+
             </View>
           </View>
           
