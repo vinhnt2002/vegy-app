@@ -1,4 +1,6 @@
 import { appwriteConfig, databases } from "../appwrite";
+
+// @ts-ignore
 import { Query } from "react-native-appwrite";
 export async function getAllSeed() {
   try {
@@ -12,5 +14,3 @@ export async function getAllSeed() {
     throw new Error(error);
   }
 }
-
-

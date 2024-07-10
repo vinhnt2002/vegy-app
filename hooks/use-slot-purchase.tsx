@@ -1,7 +1,7 @@
-import { getPurchasedSlotsByFarmId, getSlotByFarmId } from '@/lib/actions/slots';
+import { getPurchasedSlotsByFarmId } from '@/lib/actions/slots';
 import { useState, useEffect, useCallback } from 'react';
 
-export function useSlotsByFarmId(farmId: string) {
+export function useSlotsPurchaseByFarmId(farmId: string) {
   const [slots, setSlots] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
@@ -9,7 +9,7 @@ export function useSlotsByFarmId(farmId: string) {
   const fetchSlots = useCallback(async () => {
     try {
       setLoading(true);
-      const fetchedSlots = await getSlotByFarmId(farmId);
+      const fetchedSlots = await getPurchasedSlotsByFarmId(farmId);
       setSlots(fetchedSlots);
       setError(null);
     } catch (err) {

@@ -1,4 +1,6 @@
 import { appwriteConfig, databases, getCurrentUser } from "../appwrite";
+
+// @ts-ignore
 import { ID, Query } from "react-native-appwrite";
 
 // Create Payment
@@ -10,7 +12,6 @@ export async function createPayment(
   method: string
 ) {
   try {
-    // Tạo bản ghi thanh toán mới
     const payment = await databases.createDocument(
       appwriteConfig.databaseId,
       appwriteConfig.paymentCollectionId,
@@ -101,6 +102,40 @@ export async function getFarmsWithPurchasedSlots() {
     );
 
     return farms.documents;
+  } catch (error: any) {
+    console.error("Error fetching farms with purchased slots:", error);
+    throw new Error(error.message);
+  }
+}
+
+export async function getslotsWithPurchased() {
+  try {
+    const currentUser = await getCurrentUser();
+
+    const payments = await databases.listDocuments(
+      appwriteConfig.databaseId,
+      appwriteConfig.paymentCollectionId,
+      [
+        Query.equal("userId", currentUser.$id),
+        Query.equal("status", "completed"),
+      ]
+    );
+
+    const slotIds = payments.documents
+      .filter((payment: any) => payment.slotId && payment.slotId.$id)
+      .map((payment: any) => payment.slotId.$id);
+
+    if (slotIds.length === 0) {
+      return [];
+    }
+
+    const slots = await databases.listDocuments(
+      appwriteConfig.databaseId,
+      appwriteConfig.slotCollectionId,
+      [Query.equal("$id", slotIds)]
+    );
+
+    return slots.documents;
   } catch (error: any) {
     console.error("Error fetching farms with purchased slots:", error);
     throw new Error(error.message);

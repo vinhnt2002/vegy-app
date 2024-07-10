@@ -16,13 +16,19 @@ import ItemProfile from "./items-profiles";
 import { useGlobalContext } from "@/context/global-provider";
 import { LinearGradient } from "expo-linear-gradient";
 import useAppwrite from "@/lib/use-appwrite";
-import { getFarmsWithPurchasedSlots } from "@/lib/actions/payment";
+import { getFarmsWithPurchasedSlots, getslotsWithPurchased } from "@/lib/actions/payment";
+import { Link, Stack } from "expo-router";
+import Loader from "./loader/loader";
 
 const FarmItem = ({ farm }: any) => (
-  <View style={styles.farmItem}>
-    <Image source={{ uri: farm.image }} style={styles.farmImage} />
-    <Text style={styles.farmName}>{farm.name}</Text>
-  </View>
+  <Link href={`/farm/${farm.$id}`} asChild>
+    <TouchableOpacity>
+      <View style={styles.farmItem}>
+        <Image source={{ uri: farm.image }} style={styles.farmImage} />
+        <Text style={styles.farmName}>{farm.name}</Text>
+      </View>
+    </TouchableOpacity>
+  </Link>
 );
 const ProfileComponent = () => {
   const {
@@ -30,12 +36,22 @@ const ProfileComponent = () => {
     refetch,
     loading,
   } = useAppwrite(getFarmsWithPurchasedSlots);
-  const { user } = useGlobalContext();
+
+  const {data:slots} = useAppwrite(getslotsWithPurchased)
+  const { user,loading:userLoading } = useGlobalContext();
 
   const farmCount = farms.length;
   const seedsCount = 50;
-  const walletCount = 4;
+  const slotCount = slots.length;
 
+    if (loading || userLoading) {
+    return (
+      <>
+        <Stack.Screen options={{ headerShown: false }} />
+        <Loader />
+      </>
+    );
+  }
   return (
     <SafeAreaView style={styles.safeArea}>
       <ScrollView
@@ -65,8 +81,8 @@ const ProfileComponent = () => {
             <Text style={styles.statLabel}>Seeds</Text>
           </View>
           <View style={styles.statItem}>
-            <Text style={styles.statValue}>{walletCount}</Text>
-            <Text style={styles.statLabel}>Wallet</Text>
+            <Text style={styles.statValue}>{slotCount}</Text>
+            <Text style={styles.statLabel}>Slots</Text>
           </View>
         </View>
 

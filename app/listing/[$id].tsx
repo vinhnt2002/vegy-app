@@ -9,7 +9,7 @@ import {
   View,
 } from "react-native";
 import React, { useState } from "react";
-import { Stack, useLocalSearchParams, useRouter } from "expo-router";
+import { Redirect, Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { ListingType } from "@/types/listingType";
 import {
   Feather,
@@ -29,6 +29,7 @@ import useAppwrite from "@/lib/use-appwrite";
 import { getAllFarm } from "@/lib/actions/farm";
 import { useSlotsByFarmId } from "@/hooks/use-slot";
 import { formatCurrency } from "@/utils/formated";
+import { useGlobalContext } from "@/context/global-provider";
 
 const { width } = Dimensions.get("window");
 const IMG_HEIGHT = 300;
@@ -38,9 +39,11 @@ const IMG_HEIGHT = 300;
 const ListingDetails = () => {
   const { $id } = useLocalSearchParams();
   const { data: farms, refetch } = useAppwrite(getAllFarm);
-
   const { slots, loading, error } = useSlotsByFarmId($id as string);
-
+  
+  const { loading: userLoading, isLogged } = useGlobalContext();
+  if(!userLoading && !isLogged) return <Redirect href="/sign-in/"/>
+  
   const listing: ListingType | undefined = (farms as ListingType[]).find(
     (item) => item.$id === $id
   );
@@ -79,7 +82,8 @@ const ListingDetails = () => {
         pathname: "/(payment)/PaymentScreen",
         params: {
           farmName: listing?.name ?? "",
-          slot: selectedSlot.slotNumber || selectedSlot.$id,
+          slot: selectedSlot.slotNumber,
+          slotId: selectedSlot.$id,
           price: listing?.price ?? 0,
         },
       });

@@ -1,12 +1,6 @@
-import {
-  Account,
-  Avatars,
-  Client,
-  Databases,
-  ID,
-  Query,
-  Storage,
-} from "react-native-appwrite";
+
+// @ts-ignore
+import {Account, Avatars, Client, Databases, ID, Query, Storage,} from "react-native-appwrite";
 
 export const appwriteConfig = {
   endpoint: "https://cloud.appwrite.io/v1",

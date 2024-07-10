@@ -1,5 +1,6 @@
-import { appwriteConfig, databases } from "../appwrite";
-import { Query } from "react-native-appwrite";
+import { appwriteConfig, databases, getCurrentUser } from "../appwrite";
+// @ts-ignore
+import { Query, ID } from "react-native-appwrite";
 
 export async function getSlotByFarmId(farmId: string) {
   try {
@@ -15,6 +16,90 @@ export async function getSlotByFarmId(farmId: string) {
   }
 }
 
+export async function getPurchasedSlotsByFarmId(farmId: string) {
+  try {
+    const currentUser = await getCurrentUser();
+
+    const payments = await databases.listDocuments(
+      appwriteConfig.databaseId,
+      appwriteConfig.paymentCollectionId,
+      [
+        Query.equal("userId", currentUser.$id),
+        Query.equal("status", "completed"),
+      ]
+    );
+
+    const slotIds = payments.documents
+      .filter((payment: any) => payment.slotId && payment.slotId.$id)
+      .map((payment: any) => payment.slotId.$id);
+
+    if (slotIds.length === 0) {
+      return [];
+    }
+
+    const slots = await databases.listDocuments(
+      appwriteConfig.databaseId,
+      appwriteConfig.slotCollectionId,
+      [Query.equal("$id", slotIds), Query.equal("farmId", farmId)]
+    );
+
+    const slotsWithPlants = await Promise.all(
+      slots.documents.map(async (slot: any) => {
+        const plants = await databases.listDocuments(
+          appwriteConfig.databaseId,
+          appwriteConfig.plantCollectionId,
+          [Query.equal("slotId", slot.$id)]
+        );
+
+        const plantsWithSeeds = await Promise.all(
+          plants.documents.map(async (plant: any) => {
+            if (plant.seeds) {
+              const seed = await databases.getDocument(
+                appwriteConfig.databaseId,
+                appwriteConfig.seedCollectionId,
+                plant.seeds.$id
+              );
+              return { ...plant, seed };
+            }
+            return plant;
+          })
+        );
+
+        return { ...slot, plants: plantsWithSeeds };
+      })
+    );
+
+    return slotsWithPlants;
+  } catch (error: any) {
+    console.error("Error fetching purchased slots for farm:", error);
+    throw new Error(error.message);
+  }
+}
+
+export async function addSeedToSlot(slotId: string, seedId: string) {
+  try {
+    // const currentUser = await getCurrentUser();
+
+    // Tạo một plant mới
+    const newPlant = await databases.createDocument(
+      appwriteConfig.databaseId,
+      appwriteConfig.plantCollectionId,
+      ID.unique(),
+      {
+        slotId: slotId,
+        seeds: seedId,
+        plantedDate: new Date().toISOString(),
+        currentStage: 0,
+        // userId: currentUser.$id
+      }
+    );
+
+    return newPlant;
+  } catch (error: any) {
+    console.error("Error adding seed to slot:", error);
+    throw new Error(error.message);
+  }
+}
 
 // =========== Create faster data
 
@@ -46,7 +131,6 @@ export async function getSlotByFarmId(farmId: string) {
 //     throw new Error(error);
 //   }
 // }
-
 
 // export async function createSlot(
 //   slotNumber: string,

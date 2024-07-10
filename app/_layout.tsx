@@ -4,6 +4,7 @@ import { useFonts } from "expo-font";
 import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
+import { ToastProvider } from "react-native-toast-notifications";
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -44,18 +45,20 @@ export default function RootLayout() {
 
 function RootLayoutNav() {
   return (
-    <GlobalProvider>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen
-          name="(auth)/sign-in/index"
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name="(auth)/sign-up/index"
-          options={{ headerShown: false }}
-        />
-      </Stack>
-    </GlobalProvider>
+    <ToastProvider>
+      <GlobalProvider>
+        <Stack>
+          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+          <Stack.Screen
+            name="(auth)/sign-in/index"
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="(auth)/sign-up/index"
+            options={{ headerShown: false }}
+          />
+        </Stack>
+      </GlobalProvider>
+    </ToastProvider>
   );
 }

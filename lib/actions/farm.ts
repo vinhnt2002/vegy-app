@@ -1,4 +1,6 @@
 import { appwriteConfig, databases } from "../appwrite";
+
+// @ts-ignore
 import { Query } from "react-native-appwrite";
 export async function getAllFarm() {
   try {

@@ -1,5 +1,12 @@
 import React, { useState } from "react";
-import { View, Text, TouchableOpacity, StyleSheet, Image, Alert } from "react-native";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  Image,
+  Alert,
+} from "react-native";
 import { RadioButton } from "react-native-paper"; // Install if you haven't: npm install react-native-paper
 import { useRouter, useLocalSearchParams, Stack } from "expo-router";
 import Colors from "@/constants/Colors";
@@ -33,28 +40,37 @@ import { getCurrentUser } from "@/lib/appwrite";
 const PaymentScreen = () => {
   // const [selectedMethod, setSelectedMethod] = useState<string | null>(null);
   const router = useRouter();
-  const { farmName, slot, price } = useLocalSearchParams();
-  
+  const { farmName, slot, price, slotId } = useLocalSearchParams();
   const getPrice = (price: string | string[]): string => {
     return Array.isArray(price) ? price[0] : price;
   };
 
   const finalPrice = parseFloat(getPrice(price));
+
   const qrUrl = `https://img.vietqr.io/image/ACB-14282297-compact.png?amount=${finalPrice}`;
 
   const handlePayment = async () => {
     try {
       const currentUser = await getCurrentUser();
       if (currentUser) {
-        await createPayment(currentUser.$id, finalPrice , 'completed', slot as string, "BANK");
-        console.log(currentUser.$id, finalPrice , 'completed', slot as string, "BANK");
-        Alert.alert("Thành công", "Thanh toán đã được xử lý và lưu thành công!");
+        await createPayment(
+          currentUser.$id,
+          finalPrice,
+          "completed",
+          slotId as string,
+          "BANK"
+        );
+
+        Alert.alert(
+          "Thành công",
+          "Thanh toán đã được xử lý và lưu thành công!"
+        );
         router.push("/(payment)/PaymentSuccessScreen");
       } else {
         Alert.alert("Lỗi", "Không tìm thấy thông tin người dùng.");
       }
     } catch (error) {
-      console.error('Lỗi khi xử lý thanh toán:', error);
+      console.error("Lỗi khi xử lý thanh toán:", error);
       Alert.alert("Lỗi", "Đã xảy ra lỗi khi xử lý thanh toán.");
     }
   };
@@ -122,20 +138,20 @@ const PaymentScreen = () => {
         </TouchableOpacity>
       </View> */}
 
-
       <View style={styles.qrContainer}>
         <Text style={styles.qrTitle}>Quét để Thanh toán</Text>
         <Image
           style={styles.qrImage}
           source={{ uri: qrUrl }}
-          onError={(e) => console.log('Lỗi khi tải hình ảnh:', e.nativeEvent.error)}
+          onError={(e) =>
+            console.log("Lỗi khi tải hình ảnh:", e.nativeEvent.error)
+          }
         />
 
         <TouchableOpacity style={styles.button} onPress={handlePayment}>
           <Text style={styles.buttonText}>Xác nhận Thanh toán</Text>
         </TouchableOpacity>
       </View>
-
     </>
   );
 };
@@ -170,9 +186,9 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   orderDetail: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     marginBottom: 5,
   },
   orderLabel: {

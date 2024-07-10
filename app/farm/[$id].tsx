@@ -15,7 +15,12 @@ import { Ionicons } from "@expo/vector-icons";
 import Colors from "@/constants/Colors";
 import { LinearGradient } from "expo-linear-gradient";
 import { Stack, useLocalSearchParams } from "expo-router";
-import { useSlotsByFarmId } from "@/hooks/use-slot";
+import { useSlotsPurchaseByFarmId } from "@/hooks/use-slot-purchase";
+import useAppwrite from "@/lib/use-appwrite";
+import { getAllSeed } from "@/lib/actions/seed";
+import { addSeedToSlot } from "@/lib/actions/slots";
+import OverlayLoader from "@/components/loader/abs-loader";
+import { Toast } from "react-native-toast-notifications";
 
 const { width } = Dimensions.get("window");
 
@@ -27,58 +32,41 @@ const GrowthStages = [
   "Thu hoạch",
 ];
 
-const FarmSlotDetails = ({ route }: any) => {
-  // const { farmName, slots } = route.params;
+const FarmSlotDetails = () => {
   const { $id } = useLocalSearchParams();
-  const { slots: slotdata, loading, error } = useSlotsByFarmId($id as string);
+  const { slots, loading, error, refetch } = useSlotsPurchaseByFarmId(
+    $id as string
+  );
+  const { data: seeds } = useAppwrite(getAllSeed);
 
-  const slots = [
-    {
-      number: 1,
-      plants: [
-        {
-          name: "Cà chua",
-          image: require("@/assets/images/seeds/tomato.png"),
-          age: 15,
-        },
-        {
-          name: "Ớt",
-          image: require("@/assets/images/seeds/pepper.png"),
-          age: 10,
-        },
-        {
-          name: "Ớt",
-          image: require("@/assets/images/seeds/pepper.png"),
-          age: 10,
-        },
-        {
-          name: "Ớt",
-          image: require("@/assets/images/seeds/pepper.png"),
-          age: 10,
-        },
-      ],
-    },
-    {
-      number: 2,
-      plants: [
-        {
-          name: "Dưa chuột",
-          image: require("@/assets/images/seeds/cucumber.png"),
-          age: 20,
-        },
-      ],
-    },
-  ];
   const [currentSlotIndex, setCurrentSlotIndex] = useState(0);
   const [currentStage, setCurrentStage] = useState(1);
   const [modalVisible, setModalVisible] = useState(false);
+  const [selectedSlot, setSelectedSlot] = useState<any>(null);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const handleAddSeed = async (seedId: string) => {
+    if (!selectedSlot) return;
 
-  const seeds = [
-    { name: "Cà chua", image: require("@/assets/images/seeds/tomato.png") },
-    { name: "Dưa chuột", image: require("@/assets/images/seeds/cucumber.png") },
-    { name: "Ớt", image: require("@/assets/images/seeds/pepper.png") },
-    // Thêm các loại hạt giống khác ở đây
-  ];
+    try {
+      setIsRefreshing(true);
+      await addSeedToSlot(selectedSlot.$id, seedId);
+      Toast.show("Thêm nông sản thành công", { type: "success" });
+      refetch();
+      setModalVisible(false);
+    } catch (error) {
+      console.error(error);
+      Toast.show("Có lỗi xảy ra", {
+        type: "danger",
+      });
+    } finally {
+      setIsRefreshing(false);
+    }
+  };
+
+  const openSeedModal = (slot: any) => {
+    setSelectedSlot(slot);
+    setModalVisible(true);
+  };
 
   const renderGrowthStage = () => (
     <View style={styles.growthStageContainer}>
@@ -121,7 +109,7 @@ const FarmSlotDetails = ({ route }: any) => {
         imageStyle={styles.slotCardImage}
       >
         <View style={styles.slotHeader}>
-          <Text style={styles.slotTitle}>Mảnh đất {item.number}</Text>
+          <Text style={styles.slotTitle}>Mảnh đất {item.slotNumber}</Text>
           <TouchableOpacity style={styles.infoButton}>
             <Ionicons
               name="information-circle-outline"
@@ -134,13 +122,24 @@ const FarmSlotDetails = ({ route }: any) => {
         <View style={styles.plantsContainer}>
           {item.plants.map((plant: any, plantIndex: any) => (
             <View key={plantIndex} style={styles.plantInfoContainer}>
-              <Image source={plant.image} style={styles.plantImage} />
+              <Image
+                source={{ uri: plant.seed.image }}
+                style={styles.plantImage}
+              />
               <View style={styles.plantDetails}>
-                <Text style={styles.plantName}>{plant.name}</Text>
+                <Text style={styles.plantName}>{plant.seed.name}</Text>
                 <Text style={styles.plantStage}>
-                  Giai đoạn: {GrowthStages[currentStage]}
+                  Giai đoạn: {GrowthStages[plant.currentStage]}
                 </Text>
-                <Text style={styles.plantAge}>Tuổi: {plant.age} ngày</Text>
+                <Text style={styles.plantAge}>
+                  Tuổi:{" "}
+                  {Math.floor(
+                    (new Date().getTime() -
+                      new Date(plant.plantedDate).getTime()) /
+                      (1000 * 3600 * 24)
+                  )}{" "}
+                  ngày
+                </Text>
               </View>
             </View>
           ))}
@@ -157,7 +156,7 @@ const FarmSlotDetails = ({ route }: any) => {
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.actionButton}
-            onPress={() => setModalVisible(true)}
+            onPress={() => openSeedModal(item)}
           >
             <Ionicons
               name="add-circle-outline"
@@ -169,7 +168,18 @@ const FarmSlotDetails = ({ route }: any) => {
       </ImageBackground>
     </View>
   );
+  // if (loading) {
+  //   return (
+  //     <>
+  //       <Stack.Screen options={{ headerShown: false }} />
+  //       <Loader />
+  //     </>
+  //   );
+  // }
 
+  // if (error) {
+  //   return <Text>Error: {error.message}</Text>;
+  // }
   return (
     <>
       <Stack.Screen options={{ headerShown: false }} />
@@ -177,12 +187,12 @@ const FarmSlotDetails = ({ route }: any) => {
         source={require("@/assets/images/farm/farm-bg.png")}
         style={styles.container}
       >
-        <Text style={styles.title}>Trang trại của tôi</Text>
+        <Text style={styles.title}>Trang trại bạn sở hữu</Text>
 
         <FlatList
           data={slots}
           renderItem={renderSlot}
-          keyExtractor={(item) => item.number.toString()}
+          keyExtractor={(item) => item.$id}
           horizontal
           pagingEnabled
           showsHorizontalScrollIndicator={false}
@@ -217,16 +227,19 @@ const FarmSlotDetails = ({ route }: any) => {
               <Text style={styles.modalTitle}>Chọn hạt giống</Text>
               <FlatList
                 data={seeds}
-                renderItem={({ item }) => (
+                renderItem={({ item }: any) => (
                   <TouchableOpacity
                     style={styles.seedItem}
-                    onPress={() => setModalVisible(false)}
+                    onPress={() => handleAddSeed(item.$id)}
                   >
-                    <Image source={item.image} style={styles.seedImage} />
+                    <Image
+                      source={{ uri: item.image }}
+                      style={styles.seedImage}
+                    />
                     <Text style={styles.seedName}>{item.name}</Text>
                   </TouchableOpacity>
                 )}
-                keyExtractor={(item, index) => index.toString()}
+                keyExtractor={(item: any) => item.$id}
                 numColumns={2}
               />
               <TouchableOpacity
@@ -238,6 +251,7 @@ const FarmSlotDetails = ({ route }: any) => {
             </View>
           </View>
         </Modal>
+        {(loading || isRefreshing) && <OverlayLoader />}
       </ImageBackground>
     </>
   );
