@@ -10,13 +10,13 @@ import {
   Image,
 } from "react-native";
 import Colors from "@/constants/Colors";
-import CategoryButtons from "./button-fillter";
 import { getAllFarm } from "@/lib/actions/farm";
 import useAppwrite from "@/lib/use-appwrite";
 import { ListingType } from "@/types/listingType";
 import { FontAwesome5 } from "@expo/vector-icons";
 import { Link, Stack } from "expo-router";
 import StarRating from "./loader/star-rating";
+import CategoryButtons from "./category-button";
 
 const { width } = Dimensions.get("window");
 
@@ -63,12 +63,6 @@ const CategoryFilter = () => {
   const renderItems = ({ item }: { item: ListingType }) => {
     return (
       <>
-        <Stack.Screen
-          options={{
-            title: "",
-          }}
-        />
-
         <Link href={`/listing/${item.$id}`} asChild>
           <TouchableOpacity>
             <View style={[styles.item, { width: (width - 60) / 2 }]}>
@@ -102,7 +96,7 @@ const CategoryFilter = () => {
     if (filteredFarms.length === 0) {
       return (
         <View style={styles.noResultsContainer}>
-          <Text style={styles.noResultsText}>No results found.</Text>
+          <Text style={styles.noResultsText}>Không có kết quả</Text>
         </View>
       );
     } else {
@@ -122,16 +116,17 @@ const CategoryFilter = () => {
 
   return (
     <View style={styles.container}>
-      <View style={styles.pickerContainer}>
-        <CategoryButtons onCagtegoryChanged={onCatChanged} />
-      </View>
+    
 
       <TextInput
         style={styles.input}
-        placeholder="Search by name"
+        placeholder="Tìm kiếm"
         value={searchTerm}
         onChangeText={(text) => setSearchTerm(text)}
       />
+        <View style={styles.pickerContainer}>
+        <CategoryButtons onCagtegoryChanged={onCatChanged} />
+        </View>
       {renderContent()}
     </View>
   );
@@ -142,6 +137,7 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingHorizontal: 20,
     backgroundColor: Colors.bgColor,
+    paddingTop: 60,
   },
   row: {
     flexDirection: "row",
@@ -159,14 +155,10 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.white,
   },
   pickerContainer: {
-    position: "absolute",
-    marginTop: 20,
-    top: 20,
-    right: 20,
-    zIndex: 1,
+    marginBottom: 16,
   },
   flatList: {
-    marginTop: 80,
+    paddingTop: 16,
   },
   item: {
     backgroundColor: Colors.white,

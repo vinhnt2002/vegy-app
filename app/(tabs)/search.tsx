@@ -1,13 +1,19 @@
 import React from "react";
-import { StyleSheet, View } from "react-native";
+import { SafeAreaView, StyleSheet, View } from "react-native";
 
 import CategoryFilter from "@/components/category-filter";
+import { Stack } from "expo-router";
 
 const Page = () => {
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
+      <Stack.Screen
+        options={{
+          headerShown: false,
+        }}
+      />
       <CategoryFilter />
-    </View>
+    </SafeAreaView>
   );
 };
 
@@ -16,7 +22,5 @@ export default Page;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    // justifyContent: "center",
-    // alignItems: "center",
   },
 });

@@ -89,7 +89,7 @@ const Page = () => {
             </TouchableOpacity>
           </View>
 
-          <CategoryButtons onCagtegoryChanged={onCatChanged} />
+          <CategoryButtons onCagtegoryChanged={onCatChanged} title="Khu vực gần đây"/>
 
           <Listings listings={farms} category={category} />
 
